@@ -1,8 +1,7 @@
-﻿using System;
-using System.Globalization;
-using System.IO;
+﻿using System.Globalization;
 using CsvHelper;
-using System.Collections.Generic;
+
+namespace Chirp.CLI;
 
 public class Program
 {
