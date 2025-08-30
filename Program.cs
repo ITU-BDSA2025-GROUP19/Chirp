@@ -9,7 +9,15 @@ public class Program
     public static void Main(string[] args)
     {
         var filepath = "chirp_cli_db.csv";
-
+        
+        if (args.Length == 0)
+        {
+            Console.WriteLine("You must also write an argument. Options:");
+            Console.WriteLine("  read              - Show all cheeps");
+            Console.WriteLine("  cheep <message>   - Add a new cheep");
+            return;
+        }
+        
         if (args[0] == "read")
         {
             using var reader = new StreamReader(filepath);
