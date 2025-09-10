@@ -15,7 +15,19 @@ public sealed class CsvDatabase<T> : IDatabaseRepository<T>
     }
     public void Store(T record)
     {
-        throw new NotImplementedException();
+        var messagesIn = new List<T>();
         
-    }
+        if (File.Exists(_filePath))
+        {
+            using var reader = new StreamReader(_filePath);
+            using var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
+            messagesIn.AddRange(csvReader.GetRecords<T>()); 
+        }
+        
+        messagesIn.Add(record);
+        
+        using var writer = new StreamWriter(_filePath, false);
+        using var csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture);
+        csvWriter.WriteRecords(messagesIn);
+   }
 }

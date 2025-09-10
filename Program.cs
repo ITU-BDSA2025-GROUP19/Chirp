@@ -1,6 +1,4 @@
 ﻿using System.CommandLine;
-using System.Globalization;
-using CsvHelper;
 using SimpleDB;
 
 
@@ -10,11 +8,11 @@ public class Program
 {
     public static async Task<int> Main(string[] args)
     {
-        var filepath = "chirp_cli_db.csv"; // can be deleted databaseRepository is also implemented with Cheep command
         var databaseRepository = new CsvDatabase<Cheep>();
 
         var rootCommand = new RootCommand("Chirp (X formally known as Twitter) ");
-
+        
+        // Read
         var readCommand = new Command("read", "Show all cheeps");
         readCommand.SetHandler(() =>
         {
@@ -26,27 +24,17 @@ public class Program
             }
         });
 
+        // Cheep
         var cheepCommand = new Command("cheep", "Add a new cheep");
         var messageArg = new Argument<string>("message", "Message to cheep");
         cheepCommand.AddArgument(messageArg);
-        cheepCommand.SetHandler((string message) =>
+        cheepCommand.SetHandler((message) =>
         {
-            var messagesIn = new List<Cheep>();
-            if (File.Exists(filepath))
-            {
-                using var reader = new StreamReader(filepath);
-                using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
-                messagesIn.AddRange(csv.GetRecords<Cheep>());
-            }
-
             string currentUser = Environment.UserName;
             long currentTimestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var cheep = new Cheep(currentUser, message, currentTimestamp);
-            messagesIn.Add(cheep);
-
-            using var writer = new StreamWriter(filepath, false);
-            using var csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture);
-            csvWriter.WriteRecords(messagesIn);
+            
+            databaseRepository.Store(cheep);
 
             Console.WriteLine("Cheep added!");
         }, messageArg);
