@@ -6,6 +6,22 @@ namespace Chirp.SimpleDB;
 public sealed class CsvDatabase<T> : IDatabaseRepository<T>
 {
     private readonly string _filePath = "../../data/chirp_cli_db.csv";
+
+    private static CsvDatabase<T>? _instance;
+    private CsvDatabase()
+    {
+    }
+
+    public static CsvDatabase<T> Instance
+    {
+        get
+        {
+            // If _instance is null, a new CsvDatabase<T>() is created and assigned to it.
+            // If _instance is not null, its current value is used.
+            _instance ??= new CsvDatabase<T>();
+            return _instance;
+        }
+    }
     public IEnumerable<T> Read(int? limit = null)
     {
         using var reader = new StreamReader(_filePath);

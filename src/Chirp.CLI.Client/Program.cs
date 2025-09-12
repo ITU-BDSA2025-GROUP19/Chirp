@@ -1,6 +1,4 @@
 ﻿using System.CommandLine;
-using System.Globalization;
-using CsvHelper;
 using Chirp.SimpleDB;
 
 namespace Chirp.CLI;
@@ -9,7 +7,7 @@ public class Program
 {
     public static async Task<int> Main(string[] args)
     {
-        var databaseRepository = new CsvDatabase<Cheep>();
+        var databaseRepository = CsvDatabase<Cheep>.Instance;
 
         var rootCommand = new RootCommand("Chirp (X formally known as Twitter) ");
 
@@ -27,7 +25,7 @@ public class Program
         var cheepCommand = new Command("cheep", "Add a new cheep");
         var messageArg = new Argument<string>("message", "Message to cheep");
         cheepCommand.AddArgument(messageArg);
-        cheepCommand.SetHandler((string message) =>
+        cheepCommand.SetHandler((message) =>
         {
             string currentUser = Environment.UserName;
             long currentTimestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
