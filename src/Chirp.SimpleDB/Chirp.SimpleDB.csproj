@@ -9,6 +9,12 @@
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="33.1.0" />
-  </ItemGroup>
+      
+    <None Include="..\..\data\chirp_cli_db.csv">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+        <Link>chirp_cli_db.csv</Link>
+    </None>
 
+  </ItemGroup>
 </Project>

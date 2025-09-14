@@ -5,7 +5,7 @@ namespace Chirp.SimpleDB;
 
 public sealed class CsvDatabase<T> : IDatabaseRepository<T>
 {
-    private readonly string _filePath = "../../data/chirp_cli_db.csv";
+    private readonly string _filePath = Path.Combine(AppContext.BaseDirectory, "chirp_cli_db.csv");
 
     private static CsvDatabase<T>? _instance;
     private CsvDatabase()
