@@ -15,7 +15,7 @@ public class Program
         readCommand.SetHandler(() =>
         {
             var messagesOut = databaseRepository.Read();
-            UI.PrintCheeps();
+            UI.PrintCheeps(messagesOut);
         });
 
         var cheepCommand = new Command("cheep", "Add a new cheep");
