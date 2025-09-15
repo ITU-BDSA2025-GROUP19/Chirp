@@ -5,10 +5,10 @@ namespace Chirp.CLI;
 
 public class Program
 {
-    public static async Task<int> Main(string[] args)
+    public static Task<int> Main(string[] args) =>
+        RunAsync(args, CsvDatabase<Cheep>.Instance);
+    public static async Task<int> RunAsync(string[] args, IDatabaseRepository<Cheep> databaseRepository)
     {
-        var databaseRepository = CsvDatabase<Cheep>.Instance;
-
         var rootCommand = new RootCommand("Chirp (X formally known as Twitter) ");
 
         var readCommand = new Command("read", "Show all cheeps");

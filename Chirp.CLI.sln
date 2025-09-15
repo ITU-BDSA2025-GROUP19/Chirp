@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chirp.CLI.Client", "src\Chi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chirp.SimpleDB", "src\Chirp.SimpleDB\Chirp.SimpleDB.csproj", "{A800FD4B-0884-43D9-84B5-4528701B6ED6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chirp.CLI.Client.Test", "test\Chirp.CLI.Client.Test\Chirp.CLI.Client.Test.csproj", "{D9B6DE00-6FE1-45F4-AD7B-A9853905E44B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chirp.SimpleDB.Test", "test\Chirp.SimpleDB.Test\Chirp.SimpleDB.Test.csproj", "{526738D4-AEC8-4182-84AB-4E579B1EB8BC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
