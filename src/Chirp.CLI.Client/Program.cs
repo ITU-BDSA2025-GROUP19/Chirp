@@ -15,11 +15,7 @@ public class Program
         readCommand.SetHandler(() =>
         {
             var messagesOut = databaseRepository.Read();
-            foreach (var message in messagesOut)
-            {
-                var dateFormatted = DateTimeOffset.FromUnixTimeSeconds(message.Timestamp).UtcDateTime;
-                Console.WriteLine($"{message.Author} @ {dateFormatted} @ {message.Message}");
-            }
+            UI.PrintCheeps(messagesOut);
         });
 
         var cheepCommand = new Command("cheep", "Add a new cheep");
