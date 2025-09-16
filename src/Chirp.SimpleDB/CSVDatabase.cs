@@ -7,6 +7,10 @@ public sealed class CsvDatabase<T> : IDatabaseRepository<T>
 {
     private readonly string _filePath = Path.Combine(AppContext.BaseDirectory, "chirp_cli_db.csv");
 
+    public CsvDatabase(string filePath) //Used for testing purposes only
+    {
+        _filePath = filePath;
+    }
     private static CsvDatabase<T>? _instance;
     private CsvDatabase()
     {
@@ -27,7 +31,15 @@ public sealed class CsvDatabase<T> : IDatabaseRepository<T>
         using var reader = new StreamReader(_filePath);
         using var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
         var messagesOut = csvReader.GetRecords<T>().ToList();
-        return  messagesOut;
+        if (limit.HasValue)
+        {
+            return messagesOut.TakeLast(limit.Value);
+        }
+        else
+        {
+            return messagesOut;
+        }
+        
     }
     public void Store(T record)
     {

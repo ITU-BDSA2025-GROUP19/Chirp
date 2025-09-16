@@ -1,6 +1,6 @@
 ﻿using Chirp.SimpleDB;
 
-namespace Chirp.CLI.Client.Test;
+namespace Chirp.CLI.Client.Tests;
 
 public class ProgramTests
 {
