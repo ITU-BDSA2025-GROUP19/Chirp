@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - main
+      - deploy-fix
   workflow_dispatch:
 
 jobs:
@@ -56,11 +57,16 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_9D48B95B0A764ECEB8131FEAE831494B }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_BFFAB5CF95C94E7D90519A47A37CC695 }}
 
+      - name: Zip artifact for deployment
+        run: |
+          cd deploy_package
+          zip -r ../app.zip .
+
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'bdsagroup19chirpremotedb'
           slot-name: 'Production'
-          package: './deploy_package'
+          package: app.zip
           
