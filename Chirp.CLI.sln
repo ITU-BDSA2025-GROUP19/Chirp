@@ -17,6 +17,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chirp.EndToEnd.Tests", "tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chirp.Razor", "src\Chirp.Razor\Chirp.Razor.csproj", "{C36245E9-493F-4EE4-BC2A-16FB1CDD38D1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0C88DD14-F956-CE84-757C-A364CCF449FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chirp.Razor.Tests", "test\Chirp.Razor.Tests\Chirp.Razor.Tests.csproj", "{C8EF7395-5B53-44E3-8E84-165F27924CDE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +109,18 @@ Global
 		{C36245E9-493F-4EE4-BC2A-16FB1CDD38D1}.Release|x64.Build.0 = Release|Any CPU
 		{C36245E9-493F-4EE4-BC2A-16FB1CDD38D1}.Release|x86.ActiveCfg = Release|Any CPU
 		{C36245E9-493F-4EE4-BC2A-16FB1CDD38D1}.Release|x86.Build.0 = Release|Any CPU
+		{C8EF7395-5B53-44E3-8E84-165F27924CDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8EF7395-5B53-44E3-8E84-165F27924CDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8EF7395-5B53-44E3-8E84-165F27924CDE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C8EF7395-5B53-44E3-8E84-165F27924CDE}.Debug|x64.Build.0 = Debug|Any CPU
+		{C8EF7395-5B53-44E3-8E84-165F27924CDE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C8EF7395-5B53-44E3-8E84-165F27924CDE}.Debug|x86.Build.0 = Debug|Any CPU
+		{C8EF7395-5B53-44E3-8E84-165F27924CDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8EF7395-5B53-44E3-8E84-165F27924CDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8EF7395-5B53-44E3-8E84-165F27924CDE}.Release|x64.ActiveCfg = Release|Any CPU
+		{C8EF7395-5B53-44E3-8E84-165F27924CDE}.Release|x64.Build.0 = Release|Any CPU
+		{C8EF7395-5B53-44E3-8E84-165F27924CDE}.Release|x86.ActiveCfg = Release|Any CPU
+		{C8EF7395-5B53-44E3-8E84-165F27924CDE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
