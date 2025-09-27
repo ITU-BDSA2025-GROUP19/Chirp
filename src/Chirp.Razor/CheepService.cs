@@ -8,26 +8,22 @@ public interface ICheepService
 
 public class CheepService : ICheepService
 {
-    // These would normally be loaded from a database for example
-    private static readonly List<Cheep> _cheeps = new()
-    {
-        new Cheep("system", "No DB connected yet", DateTimeOffset.UtcNow.ToUnixTimeSeconds())
-    };
-
     public List<Cheep> GetCheeps()
     {
-        return _cheeps;
+        Console.WriteLine($"[CheepService] Reading cheeps from: {Path.GetFullPath("chirp_cli_db.csv")}");
+        return CsvDatabase<Cheep>.Instance.Read(100).ToList();
     }
 
     public List<Cheep> GetCheepsFromAuthor(string author)
     {
-        // filter by the provided author name
-        return _cheeps.Where(x => x.Author == author).ToList();
+        Console.WriteLine($"[CheepService] Reading cheeps for author {author} from: {Path.GetFullPath("chirp_cli_db.csv")}");
+        return CsvDatabase<Cheep>.Instance.Read()
+            .Where(x => x.Author == author)
+            .ToList();
     }
 
     public static string UnixTimeStampToDateTimeString(double unixTimeStamp)
     {
-        // Unix timestamp is seconds past epoch
         DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
         dateTime = dateTime.AddSeconds(unixTimeStamp);
         return dateTime.ToString("MM/dd/yy H:mm:ss");
