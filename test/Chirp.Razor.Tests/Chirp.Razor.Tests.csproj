@@ -17,7 +17,19 @@
 
   <ItemGroup>
     <Using Include="Xunit" />
-    <None Update="data\chirp_cli_db_test.csv" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+
+  <!-- Ensure schema.sql, dump.sql, and chirp.db are copied to test output -->
+  <ItemGroup>
+    <Content Include="..\..\src\Chirp.Razor\data\schema.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\src\Chirp.Razor\data\dump.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\src\Chirp.Razor\chirp.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
