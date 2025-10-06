@@ -1,55 +1,29 @@
-using Chirp.Domain.Entities;
+using Chirp.Application.DTOs;
 using Chirp.Application.Interfaces;
-using Chirp.Infrastructure.Data;
+using Chirp.Infrastructure.Repositories;
 using Chirp.Domain.Entities;
-using Chirp.Application;
 
-
-    //Temp code to satisfy dotnet build for task 1.a until 1.b is implemented:
-
-    
 namespace Chirp.Infrastructure.Services;
 
 public class CheepService : ICheepService
 {
-    public List<Cheep> GetCheeps(int limit = 1000)
+    private readonly CheepRepository _repository;
+    private const int PageSize = 32;
+
+    public CheepService(CheepRepository repository)
     {
-        return new List<Cheep>();
+        _repository = repository;
     }
 
-    public List<Cheep> GetCheepsByAuthor(string author, int limit = 1000)
+    public async Task<List<CheepDto>> GetCheeps(int page)
     {
-        return new List<Cheep>();
+        var cheeps = await _repository.GetCheepsAsync(page, PageSize);
+        return cheeps.Select(c => new CheepDto(c.Author.Name, c.Text, c.TimeStamp)).ToList();
+    }
+
+    public async Task<List<CheepDto>> GetCheepsByAuthor(string author, int page)
+    {
+        var cheeps = await _repository.GetCheepsByAuthorAsync(author, page, PageSize);
+        return cheeps.Select(c => new CheepDto(c.Author.Name, c.Text, c.TimeStamp)).ToList();
     }
 }
-
-    //TODO: Refactor for issue 1.b, repository pattern
-    /* private readonly DBFacade _dbFacade;
-     private const int pageSize = 32; 
-
-     public CheepService(DBFacade dbFacade)
-     {
-         _dbFacade = dbFacade;
-     }
-     public List<Cheep> GetCheeps(int page)
-     {
-         if (page < 1) page = 1;
-         int skipPages = (page - 1) * pageSize;
-
-         var cheeps = _dbFacade.GetCheeps();
-         return cheeps.Skip(skipPages).Take(pageSize).ToList();
-     }
-
-     public List<Cheep> GetCheepsByAuthor(string author, int page)
-     {
-         if (page < 1) page = 1;
-         int skipPages = (page - 1) * pageSize;
-
-         var cheeps = _dbFacade.GetCheepsByAuthor(author);
-         return cheeps.Skip(skipPages).Take(pageSize).ToList();
-     }
-
-     public void CreateCheep(string message, string author)
-     {
-         //Not implemented yet
-     } */
