@@ -1,5 +1,6 @@
 using Chirp.Application.Interfaces;
 using Chirp.Infrastructure.Data;
+using Chirp.Infrastructure.Repositories;
 using Chirp.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,7 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddSingleton<ICheepService, CheepService>();
+builder.Services.AddScoped<CheepRepository>();
+builder.Services.AddScoped<ICheepService, CheepService>();
 
 string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
