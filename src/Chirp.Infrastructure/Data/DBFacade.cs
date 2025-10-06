@@ -3,7 +3,8 @@ using Microsoft.Data.Sqlite;
 
 namespace Chirp.Infrastructure.Data;
 
-public class DBFacade
+//TODO: remove legacy DBFacade after session 6 EF Core refactor
+/* public class DBFacade
 {
     private readonly string _dbPath;
     public DBFacade()
@@ -70,3 +71,4 @@ public class DBFacade
         return cheeps;
     }
 }
+*/

@@ -8,13 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddSingleton<DBFacade>();
 builder.Services.AddSingleton<ICheepService, CheepService>();
 
 string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDbContext<ChirpDbContext>(option =>
-options.UseSqlite(connectionString == "Data Source=Chirp.db"));
+builder.Services.AddDbContext<ChirpDbContext>(options => options.UseSqlite(connectionString ?? "Data Source=Chirp.db"));
 
 var app = builder.Build();
 
@@ -28,6 +26,15 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+/* using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ChirpDbContext>();
+
+    Console.WriteLine("EF Core connected successfully!");
+    Console.WriteLine($"Authors table count: {db.Authors.Count()}");
+    Console.WriteLine($"Cheeps table count: {db.Cheeps.Count()}");
+} */ //Test to check EF Core connection, keep for now, ill remove myself later when needed
 
 app.UseRouting();
 
