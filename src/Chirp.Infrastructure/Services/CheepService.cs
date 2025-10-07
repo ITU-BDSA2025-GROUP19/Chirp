@@ -1,38 +1,29 @@
-using Chirp.Domain.Entities;
+using Chirp.Application.DTOs;
 using Chirp.Application.Interfaces;
-using Chirp.Infrastructure.Data;
-
+using Chirp.Infrastructure.Repositories;
+using Chirp.Domain.Entities;
 
 namespace Chirp.Infrastructure.Services;
+
 public class CheepService : ICheepService
 {
-    private readonly DBFacade _dbFacade;
-    private const int pageSize = 32; 
+    private readonly CheepRepository _repository;
+    private const int PageSize = 32;
 
-    public CheepService(DBFacade dbFacade)
+    public CheepService(CheepRepository repository)
     {
-        _dbFacade = dbFacade;
-    }
-    public List<Cheep> GetCheeps(int page)
-    {
-        if (page < 1) page = 1;
-        int skipPages = (page - 1) * pageSize;
-
-        var cheeps = _dbFacade.GetCheeps();
-        return cheeps.Skip(skipPages).Take(pageSize).ToList();
+        _repository = repository;
     }
 
-    public List<Cheep> GetCheepsByAuthor(string author, int page)
+    public async Task<List<CheepDto>> GetCheeps(int page)
     {
-        if (page < 1) page = 1;
-        int skipPages = (page - 1) * pageSize;
-
-        var cheeps = _dbFacade.GetCheepsByAuthor(author);
-        return cheeps.Skip(skipPages).Take(pageSize).ToList();
+        var cheeps = await _repository.GetCheepsAsync(page, PageSize);
+        return cheeps.Select(c => new CheepDto(c.Author.Name, c.Text, c.TimeStamp)).ToList();
     }
 
-    public void CreateCheep(string message, string author)
+    public async Task<List<CheepDto>> GetCheepsByAuthor(string author, int page)
     {
-        //Not implemented yet
+        var cheeps = await _repository.GetCheepsByAuthorAsync(author, page, PageSize);
+        return cheeps.Select(c => new CheepDto(c.Author.Name, c.Text, c.TimeStamp)).ToList();
     }
 }
