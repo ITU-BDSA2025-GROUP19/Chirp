@@ -2,7 +2,7 @@ namespace Chirp.Domain.Entities;
 
 public class Cheep
 {
-    public int Id { get; set; }
+    public int CheepId { get; set; }
     public string Text { get; set; } = string.Empty;
     public DateTime TimeStamp { get; set; }
     

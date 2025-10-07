@@ -1,8 +1,12 @@
 using System;
+using Chirp.Infrastructure.Data;
+using Chirp.Domain.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 public static class DbInitializer
 {
-    public static void SeedDatabase(ChirpDBContext chirpContext)
+    public static void SeedDatabase(ChirpDbContext chirpContext)
     {
         if (!(chirpContext.Authors.Any() && chirpContext.Cheeps.Any()))
         {
