@@ -28,8 +28,13 @@ if (!app.Environment.IsDevelopment())
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ChirpDbContext>();
-    context.Database.Migrate();
-    DbInitializer.SeedDatabase(context);
+    if(!builder.Environment.IsEnvironment("Testing")) //If testing, dont seed data and dont add migrations
+    // We manually "seed" data in tests for now
+    {
+        context.Database.Migrate(); 
+        DbInitializer.SeedDatabase(context);
+    }
+    
 }
 
 app.UseHttpsRedirection();
