@@ -40,7 +40,7 @@ public class CheepRepository
     {
         if (text.Length > 160)
         {
-            throw new Argumentexception("Cheep cannot be longer than 160 characters.");
+            throw new ArgumentException("Cheep cannot be longer than 160 characters.");
         }
         var author = await _authorRepository.GetAuthorByName(authorName);
 
