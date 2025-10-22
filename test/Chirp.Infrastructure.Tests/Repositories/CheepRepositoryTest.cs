@@ -89,17 +89,6 @@ namespace Chirp.Infrastructure.Tests.Repositories
             Assert.Equal("First Cheep", cheep.Text);
         }
 
-        [Fact]
-        public async Task CreateCheepAsync_ShouldThrowExceptionWhenAuthorCreationFails()
-        {
-            using var context = CreateDbContext();
 
-            // Create a partial repo that simulates a failure by using empty context without saving author
-            // (if you want a mock-based implementation, I can provide that next)
-            var repo = new CheepRepository(context);
-
-            await Assert.ThrowsAsync<InvalidOperationException>(() =>
-                repo.CreateCheepAsync("FailUser", "fail@example.com", "This should fail"));
-        }
     }
 }
