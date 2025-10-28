@@ -1,0 +1,27 @@
+@using Microsoft.AspNetCore.Identity
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<div class="navigation">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <div>
+            <a href="/">public timeline</a> |
+            <a href="/@Html.Encode(User.Identity?.Name)">my timeline</a> |
+            <form method="post" asp-area="Identity" asp-page="/Account/Logout" style="display:inline">
+                <button type="submit" class="btn btn-link" style="padding:0; border:none; vertical-align:baseline;">
+                    logout [@User.Identity?.Name]
+                </button>
+            </form>
+        </div>
+    }
+    else
+    {
+        <div>
+            <a href="/">public timeline</a> |
+            <a asp-area="Identity" asp-page="/Account/Register">register</a> |
+            <a asp-area="Identity" asp-page="/Account/Login">login</a>
+        </div>
+    }
+</div>
