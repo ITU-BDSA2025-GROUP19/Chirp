@@ -18,10 +18,6 @@ string? identityConnection = builder.Configuration.GetConnectionString("Identity
 // Application DbContext (existing)
 builder.Services.AddDbContext<ChirpDbContext>(options => options.UseSqlite(connectionString ?? "Data Source=Chirp.db"));
 
-// Identity DbContext (minimal addition)
-builder.Services.AddDbContext<ChirpIdentityDbContext>(options =>
-    options.UseSqlite(identityConnection ?? "Data Source=chirp_identity.db"));
-
 // Add Identity (minimal, keep reasonable defaults)
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
@@ -32,7 +28,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     options.Password.RequireUppercase = true;
     options.Password.RequireNonAlphanumeric = true;
 })
-.AddEntityFrameworkStores<ChirpIdentityDbContext>();
+.AddEntityFrameworkStores<ChirpDbContext>();
 
 var app = builder.Build();
 
@@ -56,8 +52,7 @@ using (var scope = app.Services.CreateScope())
     }
 
     // Identity DB migrate and seed two users (Helge and Adrian)
-    var idDb = scope.ServiceProvider.GetRequiredService<ChirpIdentityDbContext>();
-    idDb.Database.Migrate();
+    context.Database.Migrate();
 
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
