@@ -44,35 +44,31 @@ using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ChirpDbContext>();
     if(!builder.Environment.IsEnvironment("Testing")) //If testing, dont seed data and dont add migrations
-    // We manually "seed" data in tests for now
     {
         context.Database.EnsureDeleted();
         context.Database.Migrate();
         DbInitializer.SeedDatabase(context);
-    }
 
-    // Identity DB migrate and seed two users (Helge and Adrian)
-    context.Database.Migrate();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-
-    async Task CreateIfMissing(string email, string password)
-    {
-        if (await userManager.FindByEmailAsync(email) == null)
+        async Task CreateIfMissing(string email, string password)
         {
-            var user = new IdentityUser { UserName = email, Email = email, EmailConfirmed = true };
-            var result = await userManager.CreateAsync(user, password);
-            if (!result.Succeeded)
+            if (await userManager.FindByEmailAsync(email) == null)
             {
-                var errors = string.Join("; ", result.Errors.Select(e => e.Description));
-                throw new Exception($"Failed to create user {email}: {errors}");
+                var user = new IdentityUser { UserName = email, Email = email, EmailConfirmed = true };
+                var result = await userManager.CreateAsync(user, password);
+                if (!result.Succeeded)
+                {
+                    var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+                    throw new Exception($"Failed to create user {email}: {errors}");
+                }
             }
         }
-    }
 
-    // seed users synchronously to keep existing startup flow
-    CreateIfMissing("ropf@itu.dk", "LetM31n!").GetAwaiter().GetResult();
-    CreateIfMissing("adho@itu.dk", "    ").GetAwaiter().GetResult();
+        // seed users synchronously to keep existing startup flow
+        CreateIfMissing("ropf@itu.dk", "LetM31n!").GetAwaiter().GetResult();
+        CreateIfMissing("adho@itu.dk", "M32Want_Access").GetAwaiter().GetResult();
+    }
 }
 
 app.UseHttpsRedirection();
