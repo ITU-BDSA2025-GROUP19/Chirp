@@ -72,7 +72,7 @@ using (var scope = app.Services.CreateScope())
 
     // seed users synchronously to keep existing startup flow
     CreateIfMissing("ropf@itu.dk", "LetM31n!").GetAwaiter().GetResult();
-    CreateIfMissing("adho@itu.dk", "M32Want_Access").GetAwaiter().GetResult();
+    CreateIfMissing("adho@itu.dk", "    ").GetAwaiter().GetResult();
 }
 
 app.UseHttpsRedirection();
