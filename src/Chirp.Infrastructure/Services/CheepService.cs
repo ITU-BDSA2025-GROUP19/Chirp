@@ -26,4 +26,10 @@ public class CheepService : ICheepService
         var cheeps = await _repository.GetCheepsByAuthorAsync(author, page, PageSize);
         return cheeps.Select(c => new CheepDto(c.Author.Name, c.Text, c.TimeStamp)).ToList();
     }
+    
+    public async Task<List<CheepDto>> GetCheepsByUserId(string userId, int page)
+    {
+        var cheeps = await _repository.GetCheepsByUserIdAsync(userId, page, PageSize);
+        return cheeps.Select(c => new CheepDto(c.Author.Name, c.Text, c.TimeStamp)).ToList();
+    }
 }

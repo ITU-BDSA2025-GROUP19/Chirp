@@ -36,6 +36,18 @@ public class CheepRepository
             .ToListAsync();
     }
     
+    public async Task<List<Cheep>> GetCheepsByUserIdAsync(string userId, int page, int pageSize)
+    {
+        return await _context.Cheeps
+            .Include(c => c.Author)
+            .Where(c => c.Author.ApplicationUserId == userId)
+            .OrderByDescending(c => c.TimeStamp)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
+
+    
     public async Task CreateCheepAsync(string authorName, string authorEmail, string text)
     {
         if (text.Length > 160)

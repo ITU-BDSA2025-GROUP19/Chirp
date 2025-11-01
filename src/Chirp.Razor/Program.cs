@@ -1,4 +1,5 @@
 using Chirp.Application.Interfaces;
+using Chirp.Domain.Entities;
 using Chirp.Infrastructure.Data;
 using Chirp.Infrastructure.Repositories;
 using Chirp.Infrastructure.Services;
@@ -13,7 +14,6 @@ builder.Services.AddScoped<CheepRepository>();
 builder.Services.AddScoped<ICheepService, CheepService>();
 
 string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-string? identityConnection = builder.Configuration.GetConnectionString("IdentityConnection");
 
 // Application DbContext (existing)
 builder.Services.AddDbContext<ChirpDbContext>(options => options.UseSqlite(connectionString ?? "Data Source=Chirp.db"));
@@ -51,11 +51,12 @@ using (var scope = app.Services.CreateScope())
 
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
-        async Task CreateIfMissing(string email, string password)
+        async Task CreateIfMissing(string email, string password, string displayName)
         {
-            if (await userManager.FindByEmailAsync(email) == null)
+            var user = await userManager.FindByEmailAsync(email);
+            if (user == null)
             {
-                var user = new IdentityUser { UserName = email, Email = email, EmailConfirmed = true };
+                user = new IdentityUser { UserName = email, Email = email, EmailConfirmed = true };
                 var result = await userManager.CreateAsync(user, password);
                 if (!result.Succeeded)
                 {
@@ -63,11 +64,35 @@ using (var scope = app.Services.CreateScope())
                     throw new Exception($"Failed to create user {email}: {errors}");
                 }
             }
-        }
 
-        // seed users synchronously to keep existing startup flow
-        CreateIfMissing("ropf@itu.dk", "LetM31n!").GetAwaiter().GetResult();
-        CreateIfMissing("adho@itu.dk", "M32Want_Access").GetAwaiter().GetResult();
+            // Link or create Author
+            var author = context.Authors.FirstOrDefault(a => a.Email == email);
+            if (author != null)
+            {
+                // link existing author to IdentityUser
+                author.ApplicationUserId = user.Id;
+                if (string.IsNullOrEmpty(author.Name))
+                    author.Name = displayName;
+                context.Update(author);
+            }
+            else
+            {
+                // create a new author
+                author = new Author
+                {
+                    Name = displayName,
+                    Email = email,
+                    ApplicationUserId = user.Id
+                };
+                context.Authors.Add(author);
+            }
+
+            await context.SaveChangesAsync();
+        }
+        
+        /* Create users and link to authors */
+        CreateIfMissing("ropf@itu.dk", "LetM31n!", "Helge").GetAwaiter().GetResult();
+        CreateIfMissing("adho@itu.dk", "M32Want_Access", "Adrian").GetAwaiter().GetResult();
     }
 }
 

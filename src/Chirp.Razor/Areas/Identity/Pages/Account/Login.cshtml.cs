@@ -115,6 +115,13 @@ namespace Chirp.Razor.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
+                    
+                    // If the returnUrl is empty or points to the Identity area, redirect to public timeline instead
+                    if (string.IsNullOrEmpty(returnUrl) || Url.IsLocalUrl(returnUrl) == false || returnUrl.StartsWith("/Identity"))
+                    {
+                        return Redirect("/");
+                    }
+
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)
