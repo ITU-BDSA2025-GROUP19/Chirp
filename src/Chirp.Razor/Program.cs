@@ -43,7 +43,11 @@ if (!app.Environment.IsDevelopment())
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ChirpDbContext>();
-    if(!builder.Environment.IsEnvironment("Testing")) //If testing, dont seed data and dont add migrations
+    if (builder.Environment.IsEnvironment("Testing"))
+    {
+        context.Database.EnsureCreated();
+    }
+    else
     {
         context.Database.EnsureDeleted();
         context.Database.Migrate();
