@@ -1,22 +1,32 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
     <link href="/css/style.css" rel="stylesheet" type="text/css" />
-    <link rel="icon" type="image/png" href="/favicon/favicon.ico">
+    <link rel="icon" type="image/png" href="/favicon/favicon.ico" />
 </head>
 <body>
-<div class=page>
-    <h1><img src="/images/icon1.png" alt="Icon1"/>Chirp!</h1>
+    <div class="page">
+        <h1><img src="/images/icon1.png" alt="Icon1" />Chirp!</h1>
 
-    <div class=body>
+        @await Html.PartialAsync("_LoginPartial")
+
+        <div class="body">
             @RenderBody()
-    </div>
-    <div class=footer>
-        Chirp &mdash; An ASP.NET Application
-    </div>
-</div>
+        </div>
 
+        <div class="footer">
+            Chirp &mdash; An ASP.NET Application
+        </div>
+    </div>
+
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
-@await RenderSectionAsync("Scripts", required: false)
 </html>

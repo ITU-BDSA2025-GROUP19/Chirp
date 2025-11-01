@@ -1,0 +1,45 @@
+@using Microsoft.AspNetCore.Identity
+@using Chirp.Infrastructure.Data
+@using Chirp.Domain.Entities
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@inject ChirpDbContext DbContext
+
+@{
+    string? displayName = null;
+
+    if (SignInManager.IsSignedIn(User))
+    {
+        var user = await UserManager.GetUserAsync(User);
+        if (user != null)
+        {
+            // Try to find the corresponding Author
+            var author = DbContext.Authors.FirstOrDefault(a => a.ApplicationUserId == user.Id);
+            displayName = author?.Name ?? user.UserName ?? user.Email;
+        }
+    }
+}
+
+<div class="navigation">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <div>
+            <a href="/">public timeline</a> |
+            <a href="/@displayName">my timeline</a> |
+            <form method="post" asp-area="Identity" asp-page="/Account/Logout" style="display:inline">
+                <button type="submit" class="btn btn-link" style="padding:0; border:none; vertical-align:baseline;">
+                    logout [@displayName]
+                </button>
+            </form>
+        </div>
+    }
+    else
+    {
+        <div>
+            <a href="/">public timeline</a> |
+            <a asp-area="Identity" asp-page="/Account/Register">register</a> |
+            <a asp-area="Identity" asp-page="/Account/Login">login</a>
+        </div>
+    }
+</div>
