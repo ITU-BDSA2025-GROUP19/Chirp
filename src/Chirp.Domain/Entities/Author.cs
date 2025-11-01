@@ -6,6 +6,8 @@ public class Author
     public string Email { get; set; } = string.Empty;
 
     public int AuthorId { get; set; }
+    
+    public string? ApplicationUserId { get; set; }
 
     public List<Cheep> Cheeps { get; set; } = new();
 }
