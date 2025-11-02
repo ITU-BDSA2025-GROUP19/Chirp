@@ -39,7 +39,7 @@ public class PublicModel : PageModel
     
     public async Task<IActionResult> OnPostAsync()
     {
-        if (!User.Identity.IsAuthenticated)
+        if (!User.Identity?.IsAuthenticated ?? false)
         {
             return Challenge(); //Goes to login page, just extra protection, probably wont ever get called
         }
