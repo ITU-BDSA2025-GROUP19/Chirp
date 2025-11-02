@@ -40,10 +40,12 @@ builder.Services.AddAuthentication(options =>
       .AddCookie()
       .AddGitHub(o =>
       {
-          o.ClientId = builder.Configuration["Github:clientId"];
-          o.ClientSecret = builder.Configuration["Github:clientSecret"];
+          o.ClientId = builder.Configuration["authentication:github:clientId"];
+          o.ClientSecret = builder.Configuration["authentication:github:clientSecret"];
           o.CallbackPath = "/signin-github";
       });
+
+builder.Services.AddSession();
 
 var app = builder.Build();
 
