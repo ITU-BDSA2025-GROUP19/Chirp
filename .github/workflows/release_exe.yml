@@ -42,11 +42,11 @@ jobs:
         with:
           dotnet-version: 8.0.x
       - name: Publish for Windows
-        run: dotnet publish src/Chirp.CLI.Client/Chirp.CLI.Client.csproj -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -o publish/win-x64
+        run: dotnet publish src/Chirp.Razor/Chirp.Razor.csproj -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -o publish/win-x64
       - name: Publish for macOS
-        run: dotnet publish src/Chirp.CLI.Client/Chirp.CLI.Client.csproj -c Release -r osx-x64 --self-contained false -p:PublishSingleFile=true -o publish/osx-x64
+        run: dotnet publish src/Chirp.Razor/Chirp.Razor.csproj -c Release -r osx-x64 --self-contained false -p:PublishSingleFile=true -o publish/osx-x64
       - name: Publish for Linux
-        run: dotnet publish src/Chirp.CLI.Client/Chirp.CLI.Client.csproj -c Release -r linux-x64 --self-contained false -p:PublishSingleFile=true -o publish/linux-x64
+        run: dotnet publish src/Chirp.Razor/Chirp.Razor.csproj -c Release -r linux-x64 --self-contained false -p:PublishSingleFile=true -o publish/linux-x64
       
       - name: Create Windows zip
         run: |

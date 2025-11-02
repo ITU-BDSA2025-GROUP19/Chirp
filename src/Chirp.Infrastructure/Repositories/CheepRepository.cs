@@ -54,7 +54,7 @@ public class CheepRepository
         {
             throw new ArgumentException("Cheep cannot be longer than 160 characters.");
         }
-        var author = await _authorRepository.GetAuthorByName(authorName);
+        var author = await _authorRepository.GetAuthorByEmail(authorEmail);
 
         // If author doesn't exist, create one
         if (author == null)
@@ -78,5 +78,10 @@ public class CheepRepository
 
         _context.Cheeps.Add(cheep);
         await _context.SaveChangesAsync();
+    }
+
+    public Task CreateCheepAsync(object value1, object value2, string text)
+    {
+        throw new NotImplementedException();
     }
 }
