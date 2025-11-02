@@ -20,11 +20,11 @@ public class PublicModel : PageModel
     [BindProperty]
     public string Text { get; set; } = string.Empty;
 
-    public PublicModel(ICheepService service, CheepRepository cheeprepository, UserManager<IdentityUser> usermanager)
+    public PublicModel(ICheepService service, CheepRepository cheepRepository, UserManager<IdentityUser> userManager)
     {
         _service = service;
-        _cheepRepository = cheeprepository;
-        _userManager = usermanager;
+        _cheepRepository = cheepRepository;
+        _userManager = userManager;
     }
 
     public async Task<ActionResult> OnGet([FromQuery] int page)
