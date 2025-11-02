@@ -80,7 +80,7 @@ public class CheepRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task CreateCheepAsync(object value1, object value2, string text)
+    public Task CreateCheepAsync(object value1, object value2, string text)
     {
         throw new NotImplementedException();
     }
