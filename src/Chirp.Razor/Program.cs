@@ -5,8 +5,6 @@ using Chirp.Infrastructure.Repositories;
 using Chirp.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using AspNet.Security.OAuth.GitHub;
-using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,84 +18,17 @@ string? connectionString = builder.Configuration.GetConnectionString("DefaultCon
 // Application DbContext (existing)
 builder.Services.AddDbContext<ChirpDbContext>(options => options.UseSqlite(connectionString ?? "Data Source=Chirp.db"));
 
-builder.Services
-    .AddIdentityCore<IdentityUser>(options =>
-    {
-        options.SignIn.RequireConfirmedAccount = false;
-        options.Password.RequiredLength = 6;
-        options.Password.RequireDigit = true;
-        options.Password.RequireLowercase = true;
-        options.Password.RequireUppercase = true;
-        options.Password.RequireNonAlphanumeric = false;
-    })
-    .AddSignInManager()
-    .AddEntityFrameworkStores<ChirpDbContext>();
-
-// GitHub OAuth 
-builder.Services
-    .AddAuthentication(options =>
-    {
-        options.DefaultScheme = IdentityConstants.ApplicationScheme;
-        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-    })
-    .AddCookie(IdentityConstants.ApplicationScheme)  
-    .AddCookie(IdentityConstants.ExternalScheme)    
-    .AddGitHub(o =>
-    {
-        o.ClientId = builder.Configuration["authentication:github:clientId"];
-        o.ClientSecret = builder.Configuration["authentication:github:clientSecret"];
-        o.CallbackPath = "/signin-github";
-
-        o.Events.OnCreatingTicket = async context =>
-        {
-            var userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<IdentityUser>>();
-            var signInManager = context.HttpContext.RequestServices.GetRequiredService<SignInManager<IdentityUser>>();
-            var db = context.HttpContext.RequestServices.GetRequiredService<ChirpDbContext>();
-
-            var email = context.Identity?.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
-            var name = context.Identity?.Name ?? email ?? "GitHubUser";
-
-            if (string.IsNullOrWhiteSpace(email))
-                return;
-
-            var user = await userManager.FindByEmailAsync(email);
-            if (user == null)
-            {
-                user = new IdentityUser { UserName = email, Email = email, EmailConfirmed = true };
-                await userManager.CreateAsync(user);
-            }
-
-            // Link or create Author
-            var author = db.Authors.FirstOrDefault(a => a.Email == email);
-            if (author == null)
-            {
-                author = new Author
-                {
-                    Name = name,
-                    Email = email,
-                    ApplicationUserId = user.Id
-                };
-                db.Authors.Add(author);
-            }
-            else if (string.IsNullOrEmpty(author.ApplicationUserId))
-            {
-                author.ApplicationUserId = user.Id;
-                db.Authors.Update(author);
-            }
-
-            await db.SaveChangesAsync();
-
-            // Directly sign in the user
-            await signInManager.SignInAsync(user, isPersistent: false);
-        };
-    });
-
-builder.Services.ConfigureApplicationCookie(options =>
+// Add Identity (minimal, keep reasonable defaults)
+builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
-    options.LoginPath = "/Identity/Account/Login";
-    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-});
-builder.Services.AddSession();
+    options.SignIn.RequireConfirmedAccount = false;
+    options.Password.RequiredLength = 6;
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+})
+.AddEntityFrameworkStores<ChirpDbContext>();
 
 var app = builder.Build();
 
@@ -112,8 +43,6 @@ if (!app.Environment.IsDevelopment())
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ChirpDbContext>();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-
     if (builder.Environment.IsEnvironment("Testing"))
     {
         context.Database.EnsureCreated();
@@ -123,6 +52,8 @@ using (var scope = app.Services.CreateScope())
         context.Database.EnsureDeleted();
         context.Database.Migrate();
         DbInitializer.SeedDatabase(context);
+
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
         async Task CreateIfMissing(string email, string password, string displayName)
         {
@@ -171,19 +102,20 @@ using (var scope = app.Services.CreateScope())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+/* using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ChirpDbContext>();
+
+    Console.WriteLine("EF Core connected successfully!");
+    Console.WriteLine($"Authors table count: {db.Authors.Count()}");
+    Console.WriteLine($"Cheeps table count: {db.Cheeps.Count()}");
+} */ //Test to check EF Core connection, keep for now, ill remove myself later when needed
+
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseSession();
-
-app.MapGet("/login/github", async context =>
-{
-    await context.ChallengeAsync("GitHub", new AuthenticationProperties
-    {
-        RedirectUri = "/"
-    });
-});
 
 app.MapRazorPages();
 
