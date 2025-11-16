@@ -17,6 +17,9 @@ namespace Chirp.Razor.Tests //we use the same file-based Sqlite here so the app 
         {
 
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
+            Environment.SetEnvironmentVariable("authentication__github__clientId", "fake-client-id");
+            Environment.SetEnvironmentVariable("authentication__github__clientSecret", "fake-client-secret");
+            
             _connection = new SqliteConnection("DataSource=:memory:");
             _connection.Open();
 
