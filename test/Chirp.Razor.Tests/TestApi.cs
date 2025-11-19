@@ -81,7 +81,7 @@ namespace Chirp.Razor.Tests //we use the same file-based Sqlite here so the app 
             Assert.Contains($"{author}'s Timeline", html);
         }
         
-        public void Dispose() => _connection.Dispose();
+        protected void Dispose() => _connection.Dispose();
     }
     }
 
