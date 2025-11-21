@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Chirp.Application.Interfaces;
 using Chirp.Application.DTOs;
@@ -18,6 +19,8 @@ public class PublicModel : PageModel
     public int CurrentPage { get; set; } = 1;
 
     [BindProperty]
+    [Required] 
+    [StringLength(160, ErrorMessage = "Cheep must be max 160 characters")]
     public string Text { get; set; } = string.Empty;
 
     public PublicModel(ICheepService service, CheepRepository cheepRepository, UserManager<IdentityUser> userManager)
