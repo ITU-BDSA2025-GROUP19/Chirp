@@ -79,6 +79,26 @@ public class CheepRepository
         _context.Cheeps.Add(cheep);
         await _context.SaveChangesAsync();
     }
+    
+    public async Task<List<Cheep>> GetTimelineCheepsAsync(int authorId, int page, int pageSize)
+    {
+        // Get followees
+        var followeeIds = await _context.Follows
+            .Where(f => f.FollowerId == authorId)
+            .Select(f => f.FolloweeId)
+            .ToListAsync();
+
+        // Include the user themself
+        followeeIds.Add(authorId);
+
+        return await _context.Cheeps
+            .Where(c => followeeIds.Contains(c.AuthorId))
+            .OrderByDescending(c => c.TimeStamp)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Include(c => c.Author)
+            .ToListAsync();
+    }
 
     public Task CreateCheepAsync(object value1, object value2, string text)
     {
