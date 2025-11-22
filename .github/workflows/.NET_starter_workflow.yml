@@ -16,14 +16,23 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+        
     - name: Restore dependencies
       run: dotnet restore
+      
     - name: Build
       run: dotnet build --no-restore
+      
+    - name: Install Playwright Browsers
+      run: |
+        dotnet build test/Chirp.UI.Tests/Chirp.UI.Tests.csproj
+        pwsh test/Chirp.UI.Tests/bin/Debug/net8.0/playwright.ps1 install
+        
     - name: Test
       run: |
         export ASPNETCORE_ENVIRONMENT=Testing
