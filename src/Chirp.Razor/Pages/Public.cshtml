@@ -3,7 +3,7 @@
 @inject Chirp.Infrastructure.Data.ChirpDbContext DbContext
 @{
     var email = User.Identity?.Name;
-    var author = DbContext.Authors.FirstOrDefault(a => a.Email == email);
+    var currentAuthor = DbContext.Authors.FirstOrDefault(a => a.Email == email);
 }
 @{
     ViewData["Title"] = "Chirp!";
@@ -12,14 +12,13 @@
 
 <div>
     <h2> Public Timeline </h2>
+
     @if (User.Identity.IsAuthenticated) {
         <div class="cheepbox">
-            <h3>What's on your mind @(author?.Name ?? User.Identity.Name)?</h3>
+            <h3>What's on your mind @(currentAuthor?.Name ?? User.Identity.Name)?</h3>
             <form method="post">
-                <input style="float: left" type="text" asp-for="Text" id="CheepText">
+                <input style="float: left" type="text" asp-for="Text">
                 <input type="submit" value="Share">
-                
-                <span asp-validation-for="Text" class="text-danger"></span>
             </form>
         </div>
     }
@@ -29,23 +28,56 @@
         <ul id="messagelist" class="cheeps">
             @foreach (var cheep in Model.Cheeps)
             {
+                var cheepAuthor = DbContext.Authors.FirstOrDefault(a => a.Name == cheep.AuthorName);
+
+                bool isSelf = currentAuthor != null && cheepAuthor?.AuthorId == currentAuthor.AuthorId;
+                bool isFollowing = false;
+
+                if (currentAuthor != null && cheepAuthor != null && !isSelf)
+                {
+                    isFollowing = DbContext.Follows.Any(f =>
+                        f.FollowerId == currentAuthor.AuthorId &&
+                        f.FolloweeId == cheepAuthor.AuthorId);
+                }
+
                 <li>
                     <p>
                         <strong>
                             <a href="/@cheep.AuthorName">@cheep.AuthorName</a>
                         </strong>
+
                         @cheep.Text
                         <small>&mdash; @cheep.TimeStamp.ToString("g")</small>
+
+                        @* --- Follow / Unfollow Buttons --- *@
+                        @if (User.Identity.IsAuthenticated && !isSelf && cheepAuthor != null)
+                        {
+                            if (isFollowing)
+                            {
+                                <form method="post" action="/Unfollow" style="display:inline;">
+                                    <input type="hidden" name="followeeId" value="@cheepAuthor.AuthorId" />
+                                    <button type="submit" class="btn btn-link">unfollow</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form method="post" action="/Follow" style="display:inline;">
+                                    <input type="hidden" name="followeeId" value="@cheepAuthor.AuthorId" />
+                                    <button type="submit" class="btn btn-link">follow</button>
+                                </form>
+                            }
+                        }
                     </p>
                 </li>
             }
         </ul>
+
         <div class="pagination">
             @if (Model.CurrentPage > 1)
             {
                 <a href="?page=@(Model.CurrentPage - 1)">previous</a>
             }
-            
+
             <span>page @Model.CurrentPage</span>
 
             @if (Model.Cheeps.Count == 32)
