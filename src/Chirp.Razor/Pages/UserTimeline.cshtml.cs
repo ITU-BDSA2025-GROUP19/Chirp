@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Chirp.Application.Interfaces;
 using Chirp.Application.DTOs;
 using Chirp.Infrastructure.Repositories;
+using System.ComponentModel.DataAnnotations;
 
 namespace Chirp.Razor.Pages;
 
@@ -19,6 +20,8 @@ public class UserTimelineModel : PageModel
     public string Author { get; set; } = "";
 
     [BindProperty]
+    [Required]
+    [StringLength(160, ErrorMessage = "Cheep must be max 160 characters")]
     public string Text { get; set; } = string.Empty;
 
     public UserTimelineModel(
@@ -88,3 +91,4 @@ public class UserTimelineModel : PageModel
         return RedirectToPage();
     }
 }
+
