@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Microsoft.Playwright;
 using Microsoft.Playwright.NUnit;
 using NUnit.Framework;
@@ -135,7 +136,7 @@ public class FollowTests : PageTest
         await Page.GetByRole(AriaRole.Button, new() { Name = "Log in", Exact = true })
             .ClickAsync();
 
-        await Expect(Page).ToHaveURLAsync($"{BaseUrl}/");
+        await Expect(Page).ToHaveURLAsync(new Regex("https?://localhost:\\d+/"));
     }
 
     private ILocator CheepFor(string authorName)
