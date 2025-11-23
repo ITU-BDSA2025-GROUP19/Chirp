@@ -55,4 +55,26 @@ public class CheepBoxTests : PageTest {
         var value = await inputField.InputValueAsync();
         Assert.That(value.Length, Is.EqualTo(160));
     }
+
+    [Test]
+    public async Task UserTimeline_Shows_Validation_Message_For_Overlong_Cheeps()
+    {
+        await Page.GotoAsync(BaseUrl + "/Identity/Account/Login");
+        await Page.FillAsync("input[type='email']", "ropf@itu.dk");
+        await Page.FillAsync("input[type='password']", "LetM31n!");
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Log in", Exact = true }).ClickAsync();
+
+        await Page.GotoAsync(BaseUrl + "/Helge");
+
+        var inputField = Page.Locator("#UserCheepText");
+
+        await Page.EvaluateAsync("selector => document.querySelector(selector).removeAttribute('maxlength')", "#UserCheepText");
+
+        string longMessage = new string('a', 165);
+        await inputField.FillAsync(longMessage);
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Share" }).ClickAsync();
+
+        var validationMessage = Page.Locator("span[data-valmsg-for='Text']");
+        await Expect(validationMessage).ToHaveTextAsync("Cheep must be max 160 characters");
+    }
 }
