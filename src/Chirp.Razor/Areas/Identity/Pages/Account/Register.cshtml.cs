@@ -31,7 +31,6 @@ namespace Chirp.Razor.Areas.Identity.Pages.Account
         private readonly IUserStore<IdentityUser> _userStore;
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
-        private readonly IEmailSender _emailSender;
         private readonly ChirpDbContext _context;
         
         public RegisterModel(
@@ -39,7 +38,6 @@ namespace Chirp.Razor.Areas.Identity.Pages.Account
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender, 
             ChirpDbContext context)
         {
             _userManager = userManager;
@@ -47,7 +45,6 @@ namespace Chirp.Razor.Areas.Identity.Pages.Account
             _emailStore = GetEmailStore();
             _signInManager = signInManager;
             _logger = logger;
-            _emailSender = emailSender;
             _context = context;
         }
 
