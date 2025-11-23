@@ -7,7 +7,7 @@ namespace Chirp.UI.Tests;
 [TestFixture]
 public class FollowTests : PageTest
 {
-    private const string BaseUrl = "https://localhost:7102";
+    private const string BaseUrl = "http://localhost:5273";
 
    [Test]
     public async Task Anna_Can_Follow_Bella_And_Cheryl()
