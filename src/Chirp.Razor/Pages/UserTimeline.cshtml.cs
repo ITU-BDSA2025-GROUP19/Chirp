@@ -47,7 +47,9 @@ public class UserTimelineModel : PageModel
         int profileAuthorId = profileAuthor.AuthorId;
 
         // The user currently logged in
-        var appUser = await _userManager.GetUserAsync(User);
+        var userEmail = User.Identity?.Name; 
+        var appUser = await _userManager.FindByEmailAsync(userEmail);
+        
         
         int? loggedInAuthorId = null;
         
