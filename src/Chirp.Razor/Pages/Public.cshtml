@@ -17,9 +17,14 @@
         <div class="cheepbox">
             <h3>What's on your mind @(currentAuthor?.Name ?? User.Identity.Name)?</h3>
             <form method="post">
-                <input style="float: left" type="text" asp-for="Text" id="CheepText" maxlength=160>
+                <input style="float: left" type="text" asp-for="Text" id="CheepText" maxlength="160">
                 <input type="submit" value="Share">
+                
+                <span asp-validation-for="Text" class="text-danger"></span>
             </form>
+            <div id="charCounter" style="font-size: 0.9em; color: gray;">
+    0 / 160
+</div>
         </div>
     }
 
@@ -45,7 +50,6 @@
                         <strong>
                             <a href="/@cheep.AuthorName">@cheep.AuthorName</a>
                         </strong>
-
                         @cheep.Text
                         <small>&mdash; @cheep.TimeStamp.ToString("g")</small>
 
@@ -71,13 +75,12 @@
                 </li>
             }
         </ul>
-
         <div class="pagination">
             @if (Model.CurrentPage > 1)
             {
                 <a href="?page=@(Model.CurrentPage - 1)">previous</a>
             }
-
+            
             <span>page @Model.CurrentPage</span>
 
             @if (Model.Cheeps.Count == 32)
@@ -91,3 +94,31 @@
         <em>There are no cheeps so far.</em>
     }
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const input = document.querySelector("#UserCheepText") || document.querySelector("#CheepText");
+            const counter = document.querySelector("#charCounter");
+
+            if (!input || !counter) return;
+
+            const max = 160;
+
+            input.addEventListener("input", () => {
+                const length = input.value.length;
+                counter.textContent = `${length} / ${max}`;
+
+                if (length >= max) {
+                    counter.style.color = "red";
+                    counter.textContent = `${length} / ${max} (max reached)`;
+                } else {
+                    counter.style.color = "gray";
+                }
+            });
+        });
+    </script>
+}
+

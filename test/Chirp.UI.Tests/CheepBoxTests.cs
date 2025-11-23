@@ -9,7 +9,7 @@ namespace Chirp.UI.Tests;
 [TestFixture]
 public class CheepBoxTests : PageTest {
     //kører ovres local host
-    private const string BaseUrl = "http://localhost:5273"; 
+    private const string BaseUrl = "https://localhost:7102"; 
 
     //tester at kun brugere som er logge ind må skrive cheeps
     [Test]

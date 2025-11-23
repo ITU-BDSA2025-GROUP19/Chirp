@@ -24,7 +24,7 @@ public class RegisterTests : PageTest
         var password = "Test123!";  
 
         // Act: go to register page
-        await Page.GotoAsync("http://localhost:5273/Identity/Account/Register");
+        await Page.GotoAsync("https://localhost:7102/Identity/Account/Register");
 
         // Fill form
         await Page.FillAsync("#Input_DisplayName", username);
