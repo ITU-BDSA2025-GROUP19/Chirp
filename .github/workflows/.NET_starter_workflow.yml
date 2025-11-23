@@ -39,7 +39,7 @@ jobs:
         authentication__github__clientSecret: ${{ secrets.CLIENT_SECRET }}
         ASPNETCORE_ENVIRONMENT: Testing
       run: |
-        dotnet run --project src/Chirp.Razor/Chirp.Razor.csproj --urls "http://localhost:5273" &
+        dotnet run --project src/Chirp.Razor/Chirp.Razor.csproj --urls "https://localhost:7102" &
         sleep 10
         dotnet test --no-build --verbosity normal
 
