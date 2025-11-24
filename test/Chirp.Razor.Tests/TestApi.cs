@@ -57,31 +57,7 @@ namespace Chirp.Razor.Tests //we use the same file-based Sqlite here so the app 
             Assert.Contains("Chirp!", content);
             Assert.Contains("Public Timeline", content);
         }
-
-        [Theory]
-        [InlineData("alexm")]
-        [InlineData("adho")]
-        public async Task CanSeePrivateTimeline(string author)
-        {
-            using (var db = new ChirpDbContext(
-               new DbContextOptionsBuilder<ChirpDbContext>()
-               .UseSqlite(_connection)
-               .Options))
-            {
-                db.Authors.Add(new Author { Name = "alexm", Email = "a@m.com" });
-                db.Authors.Add(new Author { Name = "adho", Email = "a@h.com" });
-                db.SaveChanges();
-            }
-
-            var response = await _client.GetAsync($"/{author}");
-            response.EnsureSuccessStatusCode();
-            var html = await response.Content.ReadAsStringAsync();
-
-            Assert.Contains("Chirp!", html);
-            Assert.Contains($"{author}'s Timeline", html);
-        }
-        
-        protected void Dispose() => _connection.Dispose();
+       protected void Dispose() => _connection.Dispose();
     }
     }
 

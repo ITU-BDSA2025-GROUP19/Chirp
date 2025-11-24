@@ -32,7 +32,7 @@
         <ul id="messagelist" class="cheeps">
             @foreach (var cheep in Model.Cheeps)
             {
-                <li>
+                <li data-author="@cheep.AuthorName">
                     <p>
                         <strong>
                             <a href="/@cheep.AuthorName">@cheep.AuthorName</a>

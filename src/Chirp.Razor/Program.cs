@@ -13,6 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<CheepRepository>();
+builder.Services.AddScoped<AuthorRepository>();
+builder.Services.AddScoped<FollowRepository>();
 builder.Services.AddScoped<ICheepService, CheepService>();
 
 string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -163,9 +165,12 @@ using (var scope = app.Services.CreateScope())
             await context.SaveChangesAsync();
         }
         
-        /* Create users and link to authors */
+        /* Create required users and test users */
         CreateIfMissing("ropf@itu.dk", "LetM31n!", "Helge").GetAwaiter().GetResult();
         CreateIfMissing("adho@itu.dk", "M32Want_Access", "Adrian").GetAwaiter().GetResult();
+        CreateIfMissing("anna@itu.dk", "Password123", "Anna").GetAwaiter().GetResult();
+        CreateIfMissing("bella@itu.dk", "Password123", "Bella").GetAwaiter().GetResult();
+        CreateIfMissing("cheryl@itu.dk", "Password123", "Cheryl").GetAwaiter().GetResult();
     }
 }
 
