@@ -1,0 +1,49 @@
+@page
+@model Chirp.Razor.Areas.Identity.Pages.Account.AboutMeModel
+
+<h1>About me</h1>
+
+<section>
+    <h2>Your personal information</h2>
+    <table>
+        <tr><th>User ID</th><td>@Model.UserInfo.Id</td></tr>
+        <tr><th>Username</th><td>@Model.UserInfo.UserName</td></tr>
+    </table>
+</section>
+
+<section>
+    <h2>Users you follow</h2>
+
+    @if (Model.Following.Any())
+    {
+        <ul>
+            @foreach (var user in Model.Following)
+            {
+                <li>@user</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>You are not following anyone.</p>
+    }
+</section>
+
+<section>
+    <h2>Your cheeps</h2>
+
+    @if (Model.MyCheeps.Any())
+    {
+        @foreach (var cheep in Model.MyCheeps)
+        {
+            <article class="cheep">
+                <header>@cheep.AuthorName · @cheep.TimeStamp</header>
+                <p>@cheep.Text</p>
+            </article>
+        }
+    }
+    else
+    {
+        <p>You haven’t cheeped yet.</p>
+    }
+</section>
