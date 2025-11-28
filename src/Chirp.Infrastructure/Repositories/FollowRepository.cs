@@ -1,3 +1,4 @@
+using Chirp.Application.DTOs;
 using Chirp.Domain.Entities;
 using Chirp.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -58,12 +59,15 @@ public class FollowRepository
             f.FolloweeId == followeeAuthorId);
     }
 
-    // Get followees of a user 
-    public async Task<List<int>> GetFollowedAuthorIdsAsync(int followerAuthorId)
+    // Get followers of a user 
+    public async Task<List<FollowDto>> GetFollowsByAuthorIdAsync(int authorId)
     {
         return await _context.Follows
-            .Where(f => f.FollowerId == followerAuthorId)
-            .Select(f => f.FolloweeId)
+            .Where(f => f.FolloweeId == authorId)
+            .Join(_context.Authors,
+                f => f.FollowerId,
+                a => a.AuthorId,
+                (f, a) => new FollowDto(a.Name, a.Email))
             .ToListAsync();
     }
 }

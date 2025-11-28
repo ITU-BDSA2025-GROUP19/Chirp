@@ -10,23 +10,27 @@ public class AboutMeModel : PageModel
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly ICheepService _cheepService;
+    private readonly IAuthorService _authorService; 
 
-    public IdentityUser UserInfo { get; set; } = default!;
-    public List<CheepDto> MyCheeps { get; set; } = new();
+    public AuthorDto Author { get; set; } = default!;
+    public List<CheepDto> Cheeps { get; set; } = new();
     public List<string> Following { get; set; } = new();
 
     public AboutMeModel(
         UserManager<IdentityUser> userManager,
-        ICheepService cheepService)
+        ICheepService cheepService,
+        IAuthorService authorService)
     {
         _userManager = userManager;
         _cheepService = cheepService;
+        _authorService = authorService;
     }
 
     public async Task OnGetAsync()
     {
         var user = await _userManager.GetUserAsync(User);
-        var author = await
-        MyCheeps = await _cheepService.GetCheepsByUserId(user!.Id, 32);
+        Author = await _authorService.GetAuthorByUserId(user.Id);
+        Cheeps = await _cheepService.GetCheepsByUserId(user!.Id, 32);
+       /* Followers = awat _followService.GetFollowingByAuthorName(Author.AuthorName)*/
     }
 }

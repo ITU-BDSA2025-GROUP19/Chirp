@@ -6,8 +6,8 @@
 <section>
     <h2>Your personal information</h2>
     <table>
-        <tr><th>User ID</th><td>@Model.UserInfo.Id</td></tr>
-        <tr><th>Username</th><td>@Model.UserInfo.UserName</td></tr>
+        <tr><th>Username</th><td>@Model.Author.AuthorName</td></tr>
+        <tr><th>Mail</th><td>@Model.Author.Email</td></tr>
     </table>
 </section>
 
@@ -32,9 +32,9 @@
 <section>
     <h2>Your cheeps</h2>
 
-    @if (Model.MyCheeps.Any())
+    @if (Model.Cheeps.Any())
     {
-        @foreach (var cheep in Model.MyCheeps)
+        @foreach (var cheep in Model.Cheeps)
         {
             <article class="cheep">
                 <header>@cheep.AuthorName · @cheep.TimeStamp</header>
