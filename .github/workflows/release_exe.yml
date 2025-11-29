@@ -23,10 +23,23 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: Test
+
+    - name: install playwright browsers
       run: |
-        export ASPNETCORE_ENVIRONMENT=Testing
+        dotnet build test/Chirp.UI.Tests/Chirp.UI.Tests.csproj
+        pwsh test/Chirp.UI.Tests/bin/Debug/net8.0/playwright.ps1 install
+        
+    - name: Test
+      env:
+        authentication__github__clientId: ${{ secrets.CLIENT_ID }}
+        authentication__github__clientSecret: ${{ secrets.CLIENT_SECRET }}
+        ASPNETCORE_ENVIRONMENT: Testing
+      run: |
+        dotnet run --project src/Chirp.Razor/Chirp.Razor.csproj --urls "http://localhost:5273" &
+        sleep 10
         dotnet test --no-build --verbosity normal
+
+
 
   publish:
     

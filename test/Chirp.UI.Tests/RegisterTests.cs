@@ -21,7 +21,7 @@ public class RegisterTests : PageTest
         // Arrange
         var email = GenerateEmail();
         var username = "TestUser";
-        var password = "Test123!";  
+        var password = "Test123!";
 
         // Act: go to register page
         await Page.GotoAsync("http://localhost:5273/Identity/Account/Register");
