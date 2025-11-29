@@ -23,24 +23,23 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: Start web server
+
+    - name: install playwright browsers
       run: |
-        nohup dotnet run --project src/Chirp.Razor/Chirp.Razor.csproj --urls "http://127.0.0.1:5273" > server.log 2>&1 &
-        sleep 2
-        cat server.log
-    - name: Wait for server up
+        dotnet build test/Chirp.UI.Tests/Chirp.UI.Tests.csproj
+        pwsh test/Chirp.UI.Tests/bin/Debug/net8.0/playwright.ps1 install
+        
+    - name: Test
+      env:
+        authentication__github__clientId: ${{ secrets.CLIENT_ID }}
+        authentication__github__clientSecret: ${{ secrets.CLIENT_SECRET }}
+        ASPNETCORE_ENVIRONMENT: Testing
       run: |
-        for i in {1..180}; do
-          echo "Waiting for server..."
-          if curl --fail http://127.0.0.1:5273 > /dev/null 2>&1; then
-            echo "Server is UP"
-            exit 0
-          fi
-          sleep 1
-          cat server.log || true
-        done
-        echo "Server failed to start"
-        exit 1
+        dotnet run --project src/Chirp.Razor/Chirp.Razor.csproj --urls "http://localhost:5273" &
+        sleep 10
+        dotnet test --no-build --verbosity normal
+
+
 
   publish:
     
