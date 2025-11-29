@@ -23,6 +23,16 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
+    - name: Start web server
+      run: dotnet run --project src/Chirp.Razor/Chirp.Razor.csproj --urls "http://localhost:5273" &
+    - name: Wait for server up
+      run: |
+      for i in {1..30}; do
+        if curl --output /dev/null --silent --head --fail http://localhost:5273; then
+        break
+      fi
+      sleep 1
+      done
     - name: Install Playwright Browsers (.NET)
       run: pwsh test/Chirp.UI.Tests/bin/Debug/net8.0/playwright.ps1 install
     - name: Test
