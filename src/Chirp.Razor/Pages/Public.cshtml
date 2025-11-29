@@ -1,11 +1,10 @@
 ﻿@page "/"
 @model Chirp.Razor.Pages.PublicModel
 @inject Chirp.Infrastructure.Data.ChirpDbContext DbContext
+
 @{
     var email = User.Identity?.Name;
     var currentAuthor = DbContext.Authors.FirstOrDefault(a => a.Email == email);
-}
-@{
     ViewData["Title"] = "Chirp!";
     Layout = "Shared/_Layout";
 }
@@ -13,18 +12,19 @@
 <div>
     <h2> Public Timeline </h2>
 
-    @if (User.Identity.IsAuthenticated) {
+    @if (User.Identity.IsAuthenticated)
+    {
         <div class="cheepbox">
             <h3>What's on your mind @(currentAuthor?.Name ?? User.Identity.Name)?</h3>
             <form method="post">
                 <input style="float: left" type="text" asp-for="Text" id="CheepText" maxlength="160">
                 <input type="submit" value="Share">
-                
                 <span asp-validation-for="Text" class="text-danger"></span>
             </form>
+
             <div id="charCounter" style="font-size: 0.9em; color: gray;">
-    0 / 160
-</div>
+                0 / 160
+            </div>
         </div>
     }
 
@@ -45,7 +45,7 @@
                         f.FolloweeId == cheepAuthor.AuthorId);
                 }
 
-                <li data-author="@cheepAuthor.Name">
+                <li data-author="@cheepAuthor?.Name">
                     <p>
                         <strong>
                             <a href="/@cheep.AuthorName">@cheep.AuthorName</a>
@@ -53,7 +53,6 @@
                         @cheep.Text
                         <small>&mdash; @cheep.TimeStamp.ToString("g")</small>
 
-                        @* --- Follow / Unfollow Buttons --- *@
                         @if (User.Identity.IsAuthenticated && !isSelf && cheepAuthor != null)
                         {
                             if (isFollowing)
@@ -72,15 +71,30 @@
                             }
                         }
                     </p>
+
+                    <!-- AI FACT CHECK -->
+                    <form method="post" asp-page-handler="FactCheck" style="margin-top:5px;">
+                        <input type="hidden" name="text" value="@cheep.Text" />
+                        <button type="submit">AI fact check</button>
+                    </form>
+
+                    @if (Model.FactCheckResult != null && Model.CheckedCheep == cheep.Text)
+                    {
+                        <div class="factcheck" style="margin-top:4px; font-size:0.9em; color:#444;">
+                            <strong>AI Fact Check:</strong>
+                            <p>@Model.FactCheckResult</p>
+                        </div>
+                    }
                 </li>
             }
         </ul>
+
         <div class="pagination">
             @if (Model.CurrentPage > 1)
             {
                 <a href="?page=@(Model.CurrentPage - 1)">previous</a>
             }
-            
+
             <span>page @Model.CurrentPage</span>
 
             @if (Model.Cheeps.Count == 32)
@@ -97,10 +111,9 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const input = document.querySelector("#UserCheepText") || document.querySelector("#CheepText");
+            const input = document.querySelector("#CheepText");
             const counter = document.querySelector("#charCounter");
 
             if (!input || !counter) return;
@@ -121,4 +134,3 @@
         });
     </script>
 }
-

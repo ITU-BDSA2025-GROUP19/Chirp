@@ -40,6 +40,19 @@
                         @cheep.Text     
                         <small>&mdash; @cheep.TimeStamp.ToString("g")</small>
                     </p>
+
+                    <form method="post" asp-page-handler="FactCheck" style="margin-top:5px;">
+                        <input type="hidden" name="text" value="@cheep.Text" />
+                        <button type="submit">AI fact check</button>
+                    </form>
+
+                    @if (Model.FactCheckResult != null && Model.CheckedCheep == cheep.Text)
+                    {
+                        <div class="factcheck" style="margin-top:5px; color:#444; font-size:0.9em;">
+                            <strong>AI Fact Check:</strong>
+                            <p>@Model.FactCheckResult</p>
+                        </div>
+                    }
                 </li>
             }
         </ul>
