@@ -1,9 +1,10 @@
 ﻿@page "/{author}"
 @model Chirp.Razor.Pages.UserTimelineModel
 @inject Chirp.Infrastructure.Data.ChirpDbContext DbContext
+
 @{
-    var email = User.Identity?.Name ?? "";
-    var author = DbContext.Authors.FirstOrDefault(a => a.Email == email);
+var email = User.Identity?.Name ?? "";
+var author = DbContext.Authors.FirstOrDefault(a => a.Email == email);
 }
 @{
     ViewData["Title"] = "Chirp!";
@@ -29,75 +30,83 @@
 
     @if (Model.Cheeps.Any())
     {
-        <ul id="messagelist" class="cheeps">
-            @foreach (var cheep in Model.Cheeps)
-            {
-                <li data-author="@cheep.AuthorName">
-                    <p>
-                        <strong>
-                            <a href="/@cheep.AuthorName">@cheep.AuthorName</a>
-                        </strong>
-                        @cheep.Text     
-                        <small>&mdash; @cheep.TimeStamp.ToString("g")</small>
-                    </p>
+    <ul id="messagelist" class="cheeps">
+        @foreach (var cheep in Model.Cheeps)
+        {
+        <li data-author="@cheep.AuthorName">
+            <p>
+                <strong>
+                    <a href="/@cheep.AuthorName">@cheep.AuthorName</a>
+                </strong>
+                @cheep.Text
+                <small>&mdash; @cheep.TimeStamp.ToString("g")</small>
+            </p>
 
-                    <form method="post" asp-page-handler="FactCheck" style="margin-top:5px;">
-                        <input type="hidden" name="text" value="@cheep.Text" />
-                        <button type="submit">AI fact check</button>
-                    </form>
+            <!-- ACTION ROW (inline like public timeline) -->
+            <div style="display:flex; gap:10px; align-items:center; margin-top:4px;">
 
-                    @if (Model.FactCheckResult != null && Model.CheckedCheep == cheep.Text)
-                    {
-                        <div class="factcheck" style="margin-top:5px; color:#444; font-size:0.9em;">
-                            <strong>AI Fact Check:</strong>
-                            <p>@Model.FactCheckResult</p>
-                        </div>
-                    }
-                </li>
-            }
-        </ul>
-        <div class="pagination">
-            @if (Model.CurrentPage > 1)
-            {
-                <a href="/@routeName?page=@(Model.CurrentPage - 1)">previous</a>
-            }
-            
-            <span>page @Model.CurrentPage</span>
+                <!-- AI FACT CHECK -->
+                <form method="post" asp-page-handler="FactCheck">
+                    <input type="hidden" name="text" value="@cheep.Text" />
+                    <button type="submit">AI fact check</button>
+                </form>
 
-            @if (Model.Cheeps.Count == 32)
+            </div>
+
+            @if (Model.FactCheckResult != null && Model.CheckedCheep == cheep.Text)
             {
-                <a href="/@routeName?page=@(Model.CurrentPage + 1)">next</a>
+            <div class="factcheck" style="margin-top:5px; color:#444; font-size:0.9em;">
+                <strong>AI Fact Check:</strong>
+                <p>@Model.FactCheckResult</p>
+            </div>
             }
-        </div>
+        </li>
+        }
+    </ul>
+
+    <div class="pagination">
+        @if (Model.CurrentPage > 1)
+        {
+        <a href="/@routeName?page=@(Model.CurrentPage - 1)">previous</a>
+        }
+
+        <span>page @Model.CurrentPage</span>
+
+        @if (Model.Cheeps.Count == 32)
+        {
+        <a href="/@routeName?page=@(Model.CurrentPage + 1)">next</a>
+        }
+    </div>
     }
     else
     {
-        <em>There are no cheeps so far.</em>
+    <em>There are no cheeps so far.</em>
     }
 </div>
+
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+<partial name="_ValidationScriptsPartial" />
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const input = document.querySelector("#UserCheepText") || document.querySelector("#CheepText");
-            const counter = document.querySelector("#charCounter");
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const input = document.querySelector("#UserCheepText") || document.querySelector("#CheepText");
+        const counter = document.querySelector("#charCounter");
 
-            if (!input || !counter) return;
+        if (!input || !counter) return;
 
-            const max = 160;
+        const max = 160;
 
-            input.addEventListener("input", () => {
-                const length = input.value.length;
-                counter.textContent = `${length} / ${max}`;
+        input.addEventListener("input", () => {
+            const length = input.value.length;
+            counter.textContent = `${length} / ${max}`;
 
-                if (length >= max) {
-                    counter.style.color = "red";
-                    counter.textContent = `${length} / ${max} (max reached)`;
-                } else {
-                    counter.style.color = "gray";
-                }
-            });
+            if (length >= max) {
+                counter.style.color = "red";
+                counter.textContent = `${length} / ${max} (max reached)`;
+            } else {
+                counter.style.color = "gray";
+            }
         });
-    </script>
+    });
+</script>
 }

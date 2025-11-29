@@ -31,62 +31,68 @@
     @if (Model.Cheeps.Any())
     {
         <ul id="messagelist" class="cheeps">
-            @foreach (var cheep in Model.Cheeps)
+           @foreach (var cheep in Model.Cheeps)
+{
+    var cheepAuthor = DbContext.Authors.FirstOrDefault(a => a.Name == cheep.AuthorName);
+
+    bool isSelf = currentAuthor != null && cheepAuthor?.AuthorId == currentAuthor.AuthorId;
+    bool isFollowing = false;
+
+    if (currentAuthor != null && cheepAuthor != null && !isSelf)
+    {
+        isFollowing = DbContext.Follows.Any(f =>
+            f.FollowerId == currentAuthor.AuthorId &&
+            f.FolloweeId == cheepAuthor.AuthorId);
+    }
+
+    <li data-author="@cheepAuthor?.Name">
+        <p>
+            <strong>
+                <a href="/@cheep.AuthorName">@cheep.AuthorName</a>
+            </strong>
+            @cheep.Text
+            <small>&mdash; @cheep.TimeStamp.ToString("g")</small>
+        </p>
+
+        <!-- ACTION ROW -->
+        <div style="display:flex; gap:10px; align-items:center; margin-top:4px;">
+
+            @if (User.Identity.IsAuthenticated && !isSelf && cheepAuthor != null)
             {
-                var cheepAuthor = DbContext.Authors.FirstOrDefault(a => a.Name == cheep.AuthorName);
-
-                bool isSelf = currentAuthor != null && cheepAuthor?.AuthorId == currentAuthor.AuthorId;
-                bool isFollowing = false;
-
-                if (currentAuthor != null && cheepAuthor != null && !isSelf)
+                if (isFollowing)
                 {
-                    isFollowing = DbContext.Follows.Any(f =>
-                        f.FollowerId == currentAuthor.AuthorId &&
-                        f.FolloweeId == cheepAuthor.AuthorId);
-                }
-
-                <li data-author="@cheepAuthor?.Name">
-                    <p>
-                        <strong>
-                            <a href="/@cheep.AuthorName">@cheep.AuthorName</a>
-                        </strong>
-                        @cheep.Text
-                        <small>&mdash; @cheep.TimeStamp.ToString("g")</small>
-
-                        @if (User.Identity.IsAuthenticated && !isSelf && cheepAuthor != null)
-                        {
-                            if (isFollowing)
-                            {
-                                <form method="post" action="/Unfollow" style="display:inline;">
-                                    <input type="hidden" name="followeeId" value="@cheepAuthor.AuthorId" />
-                                    <button type="submit" class="btn btn-link">unfollow</button>
-                                </form>
-                            }
-                            else
-                            {
-                                <form method="post" action="/Follow" style="display:inline;">
-                                    <input type="hidden" name="followeeId" value="@cheepAuthor.AuthorId" />
-                                    <button type="submit" class="btn btn-link">follow</button>
-                                </form>
-                            }
-                        }
-                    </p>
-
-                    <!-- AI FACT CHECK -->
-                    <form method="post" asp-page-handler="FactCheck" style="margin-top:5px;">
-                        <input type="hidden" name="text" value="@cheep.Text" />
-                        <button type="submit">AI fact check</button>
+                    <form method="post" action="/Unfollow">
+                        <input type="hidden" name="followeeId" value="@cheepAuthor.AuthorId" />
+                        <button type="submit" class="btn btn-link">unfollow</button>
                     </form>
-
-                    @if (Model.FactCheckResult != null && Model.CheckedCheep == cheep.Text)
-                    {
-                        <div class="factcheck" style="margin-top:4px; font-size:0.9em; color:#444;">
-                            <strong>AI Fact Check:</strong>
-                            <p>@Model.FactCheckResult</p>
-                        </div>
-                    }
-                </li>
+                }
+                else
+                {
+                    <form method="post" action="/Follow">
+                        <input type="hidden" name="followeeId" value="@cheepAuthor.AuthorId" />
+                        <button type="submit" class="btn btn-link">follow</button>
+                    </form>
+                }
             }
+
+            <!-- AI FACT CHECK BUTTON -->
+            <form method="post" asp-page-handler="FactCheck">
+                <input type="hidden" name="text" value="@cheep.Text" />
+                <button type="submit">AI fact check</button>
+            </form>
+
+        </div>
+
+        @if (Model.FactCheckResult != null && Model.CheckedCheep == cheep.Text)
+        {
+            <div class="factcheck" style="margin-top:4px; font-size:0.9em; color:#444;">
+                <strong>AI Fact Check:</strong>
+                <p>@Model.FactCheckResult</p>
+            </div>
+        }
+    </li>
+}
+
         </ul>
 
         <div class="pagination">
