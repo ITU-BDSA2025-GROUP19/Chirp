@@ -16,6 +16,10 @@ builder.Services.AddScoped<CheepRepository>();
 builder.Services.AddScoped<AuthorRepository>();
 builder.Services.AddScoped<FollowRepository>();
 builder.Services.AddScoped<ICheepService, CheepService>();
+builder.Services.AddScoped<IAuthorService, AuthorService>();
+builder.Services.AddScoped<IFollowService, FollowService>();
+
+
 
 string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
