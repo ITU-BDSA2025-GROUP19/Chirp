@@ -1,3 +1,3 @@
 namespace Chirp.Application.DTOs;
 
-public record AuthorDto(string AuthorName, string Email);
+public record AuthorDto(int AuthorId, string AuthorName, string Email);

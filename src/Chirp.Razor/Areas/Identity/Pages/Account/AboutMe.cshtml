@@ -17,9 +17,9 @@
     @if (Model.Following.Any())
     {
         <ul>
-            @foreach (var user in Model.Following)
+            @foreach (var follow in Model.Following)
             {
-                <li>@user</li>
+                <li>@follow.FolloweeName</li>
             }
         </ul>
     }

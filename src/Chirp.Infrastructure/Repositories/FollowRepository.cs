@@ -18,7 +18,7 @@ public class FollowRepository
     public async Task FollowAsync(int followerAuthorId, int followeeAuthorId)
     {
         if (followerAuthorId == followeeAuthorId)
-            return; 
+            return;
 
         bool alreadyFollowing = await _context.Follows.AnyAsync(f =>
             f.FollowerId == followerAuthorId &&
@@ -62,12 +62,15 @@ public class FollowRepository
     // Get followers of a user 
     public async Task<List<FollowDto>> GetFollowsByAuthorIdAsync(int authorId)
     {
-        return await _context.Follows
-            .Where(f => f.FolloweeId == authorId)
-            .Join(_context.Authors,
-                f => f.FollowerId,
-                a => a.AuthorId,
-                (f, a) => new FollowDto(a.Name, a.Email))
-            .ToListAsync();
+        return await (
+            from f in _context.Follows
+            join follower in _context.Authors on f.FollowerId equals follower.AuthorId
+            join followee in _context.Authors on f.FolloweeId equals followee.AuthorId
+            where f.FollowerId == authorId
+            select new FollowDto(
+                follower.Name, // who follows
+                followee.Name // who is followed
+            )
+        ).ToListAsync();
     }
 }

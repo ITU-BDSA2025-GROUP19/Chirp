@@ -18,10 +18,9 @@ public class AuthorService : IAuthorService
     {
         var author = await _repository.GetAuthorByUserIdAsync(userId);
         return ToDto(author!);
-
     }
     
     private static AuthorDto ToDto(Author a)
-        => new AuthorDto(a.Name, a.Email);
+        => new AuthorDto(a.AuthorId, a.Name, a.Email);
 }
     
