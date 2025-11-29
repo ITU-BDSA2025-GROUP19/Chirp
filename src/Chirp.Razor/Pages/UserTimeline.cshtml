@@ -2,7 +2,7 @@
 @model Chirp.Razor.Pages.UserTimelineModel
 @inject Chirp.Infrastructure.Data.ChirpDbContext DbContext
 @{
-    var email = User.Identity?.Name;
+    var email = User.Identity?.Name ?? "";
     var author = DbContext.Authors.FirstOrDefault(a => a.Email == email);
 }
 @{
@@ -15,7 +15,7 @@
     <h2> @routeName's Timeline </h2>
     @if (User.Identity.IsAuthenticated) {
         <div class="cheepbox">
-        <h3>What's on your mind @(author?.Name ?? User.Identity.Name)?</h3>
+        <h3>What's on your mind @(author?.Name ?? User.Identity?.Name ?? "")?</h3>
         <form method="post">
             <input style="float: left" type="text" asp-for="Text">
             <input type="submit" value="Share">
