@@ -24,7 +24,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Install Playwright Browsers (.NET)
-      run: dotnet tool restore && dotnet playwright install
+      run: pwsh test/Chirp.UI.Tests/bin/Debug/net8.0/playwright.ps1 install
     - name: Test
       run: |
         export ASPNETCORE_ENVIRONMENT=Testing
