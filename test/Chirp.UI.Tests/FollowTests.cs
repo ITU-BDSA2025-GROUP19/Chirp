@@ -172,8 +172,10 @@ public class FollowTests : PageTest
 
     private async Task AssertNoFollowButton(string authorName)
     {
+        var cheep = CheepFor(authorName);
         await Expect(
-            CheepFor(authorName).GetByRole(AriaRole.Button)
+            cheep.GetByRole(AriaRole.Button, new() { Name = "unfollow", Exact = true })
         ).Not.ToBeVisibleAsync();
     }
+
 }
