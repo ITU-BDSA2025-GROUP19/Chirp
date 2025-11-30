@@ -14,6 +14,7 @@ public class UserTimelineModel : PageModel
     private readonly CheepRepository _cheepRepository;
     private readonly AuthorRepository _authorRepository;
     private readonly UserManager<IdentityUser> _userManager;
+    private readonly IConfiguration _configuration;
     
     public List<CheepDto> Cheeps { get; set; } = new();
     public int CurrentPage { get; set; } = 1;
@@ -31,12 +32,14 @@ public class UserTimelineModel : PageModel
         ICheepService service,
         UserManager<IdentityUser> userManager,
         CheepRepository cheepRepository,
-        AuthorRepository authorRepository)
+        AuthorRepository authorRepository,
+        IConfiguration configuration)
     {
         _service = service;
         _userManager = userManager;
         _cheepRepository = cheepRepository;
         _authorRepository = authorRepository;
+        _configuration = configuration;
     }
 
     public async Task<ActionResult> OnGet(string author, [FromQuery] int page)
@@ -74,7 +77,7 @@ public class UserTimelineModel : PageModel
     
     private async Task<string> FactCheckWithOpenAI(string cheep)
     {
-        var apiKey = Environment.GetEnvironmentVariable("OPENAI:APIKEY");
+        var apiKey = _configuration["OpenAI:Apikey"];
 
         if (string.IsNullOrEmpty(apiKey))
             return "AI not configured (no API key).";
