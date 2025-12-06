@@ -15,6 +15,7 @@ public class UserTimelineModel : PageModel
     private readonly AuthorRepository _authorRepository;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IConfiguration _configuration;
+    private readonly IAiFactCheckService _ai;
     
     public List<CheepDto> Cheeps { get; set; } = new();
     public int CurrentPage { get; set; } = 1;
@@ -33,12 +34,14 @@ public class UserTimelineModel : PageModel
         UserManager<IdentityUser> userManager,
         CheepRepository cheepRepository,
         AuthorRepository authorRepository,
+        IAiFactCheckService ai,
         IConfiguration configuration)
     {
         _service = service;
         _userManager = userManager;
         _cheepRepository = cheepRepository;
         _authorRepository = authorRepository;
+        _ai = ai;
         _configuration = configuration;
     }
 
@@ -65,7 +68,7 @@ public class UserTimelineModel : PageModel
     public async Task<IActionResult> OnPostFactCheckAsync(string text)
     {
         CheckedCheep = text;
-        FactCheckResult = await FactCheckWithOpenAI(text);
+        FactCheckResult = await _ai.FactCheckAsync(text);
 
         var author = RouteData.Values["author"]?.ToString() ?? Author;
         var pageQ = Request.Query["page"];
@@ -73,49 +76,7 @@ public class UserTimelineModel : PageModel
 
         return await LoadPageAsync(author, page);
     }
-
     
-    private async Task<string> FactCheckWithOpenAI(string cheep)
-    {
-        var apiKey = _configuration["OpenAI:Apikey"];
-
-        if (string.IsNullOrEmpty(apiKey))
-            return "AI not configured (no API key).";
-
-        cheep = cheep.Length > 300 ? cheep[..300] : cheep;
-
-        using var client = new HttpClient();
-        client.DefaultRequestHeaders.Authorization =
-            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
-
-        var payload = new
-        {
-            model = "gpt-4.1-mini",
-            messages = new[]
-            {
-                new { role = "system", content = "Classify if a statement is Fact, Opinion, Prediction or Unverifiable." },
-                new { role = "user", content = cheep }
-            },
-            temperature = 0.1
-        };
-
-        var json = System.Text.Json.JsonSerializer.Serialize(payload);
-        var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-
-        var response = await client.PostAsync("https://api.openai.com/v1/chat/completions", content);
-
-        if (!response.IsSuccessStatusCode)
-            return "AI service unavailable.";
-
-        using var stream = await response.Content.ReadAsStreamAsync();
-        using var doc = await System.Text.Json.JsonDocument.ParseAsync(stream);
-
-        return doc.RootElement
-            .GetProperty("choices")[0]
-            .GetProperty("message")
-            .GetProperty("content")
-            .GetString()!;
-    }
     private async Task<ActionResult> LoadPageAsync(string author, int page)
     {
         if (page <= 0) page = 1;

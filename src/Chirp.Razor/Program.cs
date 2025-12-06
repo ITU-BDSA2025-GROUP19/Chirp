@@ -18,8 +18,7 @@ builder.Services.AddScoped<FollowRepository>();
 builder.Services.AddScoped<ICheepService, CheepService>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<IFollowService, FollowService>();
-
-
+builder.Services.AddScoped<IAiFactCheckService, AiFactCheckService>();
 
 string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
