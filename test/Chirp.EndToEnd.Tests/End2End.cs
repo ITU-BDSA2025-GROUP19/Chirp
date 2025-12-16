@@ -1,13 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Playwright;
 using Microsoft.Data.Sqlite;
 using Xunit;
 
-namespace Chirp.EndToEnd.Tests
+namespace Chirp.End2End.Tests
 {
     public class End2End : IAsyncLifetime
     {
@@ -17,6 +15,7 @@ namespace Chirp.EndToEnd.Tests
         private IPage? _page;
 
         private const string BaseUrl = "http://localhost:5273";
+
         public async Task InitializeAsync()
         {
             _playwright = await Playwright.CreateAsync();
@@ -92,18 +91,17 @@ namespace Chirp.EndToEnd.Tests
                 dbPath = ResolveDatabasePath();
                 Assert.True(File.Exists(dbPath));
 
-                var exists = await PollForCheepInDb(dbPath!, uniqueCheep, expectedAuthor);
-                Assert.True(exists, $"Cheep '{uniqueCheep}' not found in DB");
+                var exists = await PollForCheepInDb(dbPath, uniqueCheep, expectedAuthor);
+                Assert.True(exists);
             }
             finally
             {
-                // Delation of the testing chirp
-                
                 if (!string.IsNullOrEmpty(dbPath) && File.Exists(dbPath))
                 {
                     await CleanupCheepInDb(dbPath, uniqueCheep);
                 }
-                //uNTIL HERE 
+            
+            //uNTIL HERE 
             }
         }
 
@@ -151,7 +149,7 @@ namespace Chirp.EndToEnd.Tests
             if (!string.IsNullOrEmpty(env) && File.Exists(env)) return Path.GetFullPath(env);
 
             var root = new DirectoryInfo(Directory.GetCurrentDirectory());
-            while (root != null && !root.GetFiles("*.sln").Any()) root = root.Parent;
+            while (root != null && root.GetFiles("*.sln").Length == 0) root = root.Parent;
 
             if (root != null)
             {
@@ -172,24 +170,20 @@ namespace Chirp.EndToEnd.Tests
 
             while (DateTime.Now - start < timeout)
             {
-                try
-                {
-                    using var conn = new SqliteConnection(connString);
-                    await conn.OpenAsync();
+                using var conn = new SqliteConnection(connString);
+                await conn.OpenAsync();
 
-                    var cmd = conn.CreateCommand();
-                    cmd.CommandText = @"
-                        SELECT COUNT(1)
-                        FROM Cheeps c
-                        JOIN Authors a ON c.AuthorId = a.AuthorId
-                        WHERE c.Text = @text AND a.Name = @name";
-                    cmd.Parameters.AddWithValue("@text", cheepText);
-                    cmd.Parameters.AddWithValue("@name", authorName);
+                var cmd = conn.CreateCommand();
+                cmd.CommandText = @"
+                    SELECT COUNT(1)
+                    FROM Cheeps c
+                    JOIN Authors a ON c.AuthorId = a.AuthorId
+                    WHERE c.Text = @text AND a.Name = @name";
+                cmd.Parameters.AddWithValue("@text", cheepText);
+                cmd.Parameters.AddWithValue("@name", authorName);
 
-                    var count = (long)(await cmd.ExecuteScalarAsync() ?? 0L);
-                    if (count > 0) return true;
-                }
-                catch { }
+                var count = (long)(await cmd.ExecuteScalarAsync() ?? 0L);
+                if (count > 0) return true;
 
                 await Task.Delay(100);
             }
@@ -198,39 +192,12 @@ namespace Chirp.EndToEnd.Tests
 
         private async Task CleanupCheepInDb(string dbPath, string cheepText)
         {
-            try
-            {
-                using var conn = new SqliteConnection($"Data Source={dbPath}");
-                await conn.OpenAsync();
-                var cmd = conn.CreateCommand();
-                cmd.CommandText = "DELETE FROM Cheeps WHERE Text = @text";
-                cmd.Parameters.AddWithValue("@text", cheepText);
-                await cmd.ExecuteNonQueryAsync();
-            }
-            catch { }
-        }
-
-        private async Task DumpRecentCheeps(string dbPath)
-        {
-            try
-            {
-                using var conn = new SqliteConnection($"Data Source={dbPath}");
-                await conn.OpenAsync();
-                var cmd = conn.CreateCommand();
-                cmd.CommandText = @"
-                    SELECT c.Text, a.Name
-                    FROM Cheeps c
-                    LEFT JOIN Authors a ON c.AuthorId = a.AuthorId
-                    ORDER BY c.CheepId DESC LIMIT 5";
-                using var reader = await cmd.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
-                {
-                    var txt = reader.IsDBNull(0) ? "NULL" : reader.GetString(0);
-                    var auth = reader.IsDBNull(1) ? "NULL" : reader.GetString(1);
-                    Console.WriteLine($"Author: {auth} | Text: {txt}");
-                }
-            }
-            catch { }
+            using var conn = new SqliteConnection($"Data Source={dbPath}");
+            await conn.OpenAsync();
+            var cmd = conn.CreateCommand();
+            cmd.CommandText = "DELETE FROM Cheeps WHERE Text = @text";
+            cmd.Parameters.AddWithValue("@text", cheepText);
+            await cmd.ExecuteNonQueryAsync();
         }
     }
 }
