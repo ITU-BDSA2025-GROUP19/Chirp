@@ -31,7 +31,7 @@
 
 <section>
     <h2>Your cheeps</h2>
-
+    
     @if (Model.Cheeps.Any())
     {
         @foreach (var cheep in Model.Cheeps)
@@ -46,4 +46,16 @@
     {
         <p>You haven’t cheeped yet.</p>
     }
+</section>
+
+@* Delete Account Section *@
+<section>
+    <h2>Forget Me</h2>
+    <p><strong>Important Information :</strong> This action will permanently delete your account and remove your data.</p>
+    <form method="post" asp-page-handler="ForgetMe">
+        <button type="submit" class="btn btn-danger"
+                onclick="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+            Forget me!
+        </button>
+    </form>
 </section>

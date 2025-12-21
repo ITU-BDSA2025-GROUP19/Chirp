@@ -126,7 +126,10 @@ using (var scope = app.Services.CreateScope())
     }
     else
     {
-        context.Database.EnsureDeleted();
+        //To stop deleting the data from database when restarted 
+        
+        //context.Database.EnsureDeleted();
+
         context.Database.Migrate();
         DbInitializer.SeedDatabase(context);
 
