@@ -84,6 +84,21 @@ The "About Me" Page is a custom made Page but is put together with the Identity 
 
 ## Architecture of deployed application
 
+Figure X illustrates the deployment architecture of the Chirp! application and shows how the system is composed at runtime. The application is deployed as a client–server web application consisting of a web browser client, a server-side ASP.NET Core application hosted on Azure App Service, a local SQLite database, and external services accessed over HTTPS.
+
+The client side consists of a standard web browser running on a client computer. Users interact with the application through rendered HTML pages and submit requests via forms and links. All communication between the client and the server takes place over HTTPS, ensuring secure transmission of data.
+
+The server side is hosted within an Azure App Service environment and runs a web application that handles incoming HTTP requests, executes application logic, and renders Razor Pages. The server acts as the central coordinator of the system, mediating all communication between the client, the database, and external services.
+
+Data persistence is provided by a SQLite database that is deployed within the same Azure App Service environment as the web application. As SQLite is a file-based database, it is accessed locally by the web application without network communication. The database stores both application-specific data (such as authors, cheeps, and follow relationships) and authentication-related data managed by ASP.NET Identity.
+
+In addition to local persistence, the deployed application integrates with two external services over HTTPS. GitHub OAuth is used to support user authentication via OAuth 2.0, allowing users to sign in using their GitHub accounts. During authentication, the web application communicates directly with GitHub’s OAuth endpoints, while the client browser interacts only with the Chirp! server. Furthermore, the application communicates with the OpenAI API over HTTPS using a REST-based interface to perform AI-assisted fact checking of user-submitted content. Both external services are accessed exclusively by the server and are not part of the deployed system itself.
+
+Overall, the deployment architecture follows a client–server model in which the browser acts as a client, the application hosted on Azure App Service serves as the central runtime component, and all persistence and external integrations are handled server-side. 
+
+![Architecture of the deployd aplication.](images/Chirp-deployment-diagram.png)
+
+
 
 ## User activities
 
