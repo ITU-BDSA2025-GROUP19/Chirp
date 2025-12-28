@@ -108,6 +108,22 @@ Overall, the deployment architecture follows a client–server model in which th
 
 ## Build, test, release, and deployment
 
+GitHub Actions was used as a means for continous integration and deployment in the project.
+
+The integration workflow runs on every push and pull request targeting the main branch. It checks the repository, installs .Net 8, restores dependencies, and builds the solution, installs Playwright for the test project, starts the Razor app locally and then runs the test suite. During testing, some configuration is required and is thus provided through environment variables such as OAuth client credentials from Github Secrets, furthermore the application is run in a dedicated testing environment to isolate test behavior from production behavior.
+
+The deployment workflow runs on every push to main and can also be triggered with manually using workflow_displatch. For deployment, a seperate workflow builds and tests the Razor project in Release configuration and then publishes it to a folder which is uploaded as an artifact. A deploy job then donwloads said artifact, logs into Azure via azure/login, zip the output, and deploys it the the Azure Web App using azure/webapps-deploy. Seperating the build and deploy steps into two seperate jobs ensures that the deployed package is exactly the one that was produced by the build job
+
+For the last workflow, the release workflow, releases are handled with a tag-based workflow triggered by pushing a version / release tag matching the formart of 'v*.*.*'. This workflow reruns build and tests as an extra quality gate and then publishes self-contained, single-file builds for Windows, macOS, and Linux. The outputs are zipped and attached to a GitHub Release created automatically.
+
+Together, all of these workflows ensure a coherent structure in which all changes are thoroughly validated before integration, automatically deployed to production, and released for the supported platforms.
+
+All of this can be seen in the UML activity diagrams below
+
+![Illustration of the integration workflow as a UML activity diagram.](Images/Integration_workflowpng.png)
+![Illustration of the deployment workflow as a UML activity diagram.](Images\Deployment_workflowpng.png)
+![Illustration of the release workflow as a UML activity diagram.](Images/release_workflow.png)
+
 ## Team work
 
 ## How to make _Chirp!_ work locally
