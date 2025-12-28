@@ -120,9 +120,9 @@ Together, all of these workflows ensure a coherent structure in which all change
 
 All of this can be seen in the UML activity diagrams below
 
-![Illustration of the integration workflow as a UML activity diagram.](Images/Integration_workflowpng.png)
-![Illustration of the deployment workflow as a UML activity diagram.](Images\Deployment_workflowpng.png)
-![Illustration of the release workflow as a UML activity diagram.](Images/release_workflow.png)
+![Illustration of the integration workflow as a UML activity diagram.](images/Integration_workflowpng.png)
+![Illustration of the deployment workflow as a UML activity diagram.](images/Deployment_workflowpng.png)
+![Illustration of the release workflow as a UML activity diagram.](images/release_workflow.png)
 
 ## Team work
 
