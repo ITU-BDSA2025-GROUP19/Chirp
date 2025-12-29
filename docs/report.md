@@ -121,7 +121,9 @@ Together, all of these workflows ensure a coherent structure in which all change
 All of this can be seen in the UML activity diagrams below
 
 ![Illustration of the integration workflow as a UML activity diagram.](images/Integration_workflowpng.png)
+
 ![Illustration of the deployment workflow as a UML activity diagram.](images/Deployment_workflowpng.png)
+
 ![Illustration of the release workflow as a UML activity diagram.](images/release_workflow.png)
 
 ## Team work
@@ -135,3 +137,18 @@ All of this can be seen in the UML activity diagrams below
 ## License
 
 ## LLMs, ChatGPT, CoPilot, and others
+LLMs have been used throughout the development of this project for a variety of tasks. The extent to which LLMs were used varied among team members, reflecting different working styles and preferences. Below is an overview of how LLMs contributed to the project.
+
+- **Debugging an troubleshooting.** LLMs (primarily ChatGPT and GitHub Copilot) have been particularly helpful in debugging and troubleshooting. In addition to suggesting fixes, they often explained why errors occurred. This was especially valuable when working with high-level frameworks such as EF Core and ASP.NET Identity, where error messages can be difficult to interpret. Without ChatGPT, resolving these issues would often have required extensive searching across online forums and documentation. Furthermore, GitHub Copilot’s built-in analysis of pipeline error logs proved useful when CI builds failed. 
+
+- **Writing code.** ChatGPT is very keen on writing code. However, since the primary purpose of this project was educational, prompts were deliberately structured to discourage copy-paste-ready solutions. In some cases, LLM-generated code was still used—for example, when generating unit tests. In such instances, ChatGPT was credited as a co-author in the corresponding commit. In a non-educational or production setting, LLMs would likely be used more extensively for writing code.
+
+- **Generating commit messages.** In Git Desktop the built-in Copilot has been used to generate commit messages. The commit messages have typically been used as-is or with only a few edits. 
+
+- **Personalized tutoring**. ChatGpt has been helpful in explaining concepts, answering follow-up questions, and providing feedback on ideas. The ability to iteratively ask questions and receive explanations tailored to the user’s level of understanding significantly accelerated learning.
+
+- **Writing**. Not being native english speakers, ChatGPT has been helpful in reformulating sentences so they appear more professional without "fluff".
+
+There were occasions where ChatGpt provided bad advice. It seems sometimes it fixates on solving a specific problem by creating a very advanced solution and overlooking more obvious ones. But overall the use of LMM has sped up the deevelopment and gaining experience with these tools was itself a valuable outcome.
+
+As discussed in the lectures, LLMs consume significant amounts of electricity and water, and their use should therefore be considered within an ethical and environmental context. However, given the growing importance of AI in software development, it is difficult to imagine a future where software developers do not rely on such tools. Choosing not to learn how to use LLMs due to environmental concerns may, in practice, exclude developers from the field altogether. While changes in individual behavior are important, they are unlikely on their own to resolve the environmental impact of LLMs — just as concerns have not eliminated air travel. The more realistic solution will likely come from future technological advances that make AI systems more energy- and resource-efficient.
