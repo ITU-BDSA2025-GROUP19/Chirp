@@ -3,6 +3,7 @@ title: _Chirp!_ Project Report
 subtitle: ITU BDSA 2025 Group 19
 author:
 - "Hans Voldby Larsen <havl@itu.dk>"
+- "Nikolaj Severin Due Olsen <nsol@itu.dk>"
 
 numbersections: true
 ---
@@ -129,8 +130,13 @@ All of this can be seen in the UML activity diagrams below
 ## Team work
 
 ## How to make _Chirp!_ work locally
+In order to get the _Chirp!_ application to work properly, navigate to the folder "Chirp.Razor" < "src" and execute the following _dotnet run_. This will start the application and open a port on your computer. Copy the URL displayed in the terminal _http://localhost:5273_ and paste it into your browser to explore the application.
 
 ## How to run test suite locally
+Automated UI tests for Chirp! were implemented using Playwright and NUnit. They verify core user interactions, including user registration, following/unfollowing users, and timeline behavior. The tests ensure that key functionality works as expected and that the UI reflects the correct state for different user actions.
+To run the UI tests locally, do the following:
+1. navigate to the folder "Chirp.Razor" < "src" and execute the following _dotnet run_
+2. in another terminal, navigate to the folder "Chirp.UI.Tests" < "test", and execute: _dotnet test_
 
 The Chirp project contains multiple test suites targeting different layers of the system. Together, these tests help us provide the confidence we need that the application behaves as expected at all levels.
 
