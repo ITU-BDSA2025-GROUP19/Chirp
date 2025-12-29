@@ -132,23 +132,25 @@ All of this can be seen in the UML activity diagrams below
 
 ## How to run test suite locally
 
-The Chirp project contains a plethora of test suites targeting a variety of different layers of the system. Together, these tests help us provide the confidence we need that the application behaves as expected at all levels.
+The Chirp project contains multiple test suites targeting different layers of the system. Together, these tests help us provide the confidence we need that the application behaves as expected at all levels.
 
 ### Running the test suites
 
-All test projects can be executed using the .NET CLI
+All test projects can be executed using the .NET CLI.
 
-Some of the tests, can be run directly from the repo root without starting the web application, whereas other tests require a running web application to work.
+Some of the tests can be run directly from the repo root without starting the web application, whereas other tests require a running instance of the application to work.
 
+```bash
 dotnet test test/Chirp.Infrastructure.Tests
 dotnet test test/Chirp.Razor.Tests
+```
 
 The above commands, run from the repo root, execute quickly and do not depend on external services or a running server.
 
-The UI and end-to-end tests use Playwright and therefore require a working running instance of the Chirp application to work. Following the steps at "How to make _Chirp!_ work locally" you should have a working instance of the application and can then use the following commands for the tests dependant on the application:
+The UI and end-to-end tests use Playwright and therefore require a working running instance of the Chirp application to work. Following the steps at "How to make _Chirp!_ work locally" you should have a working instance of the application and can then use the following commands for the tests dependent on the application:
 
-dotnet test test/Chirp.UI.Tests
-dotnet test test/Chirp.EndToEnd.Tests
+'''dotnet test test/Chirp.UI.Tests
+dotnet test test/Chirp.EndToEnd.Tests'''
 
 ### Description of test suites
 
@@ -158,18 +160,18 @@ These tests focus on the repository layer of the application. They use EF Core w
 
 The tests include:
 
-**AuthorRepository tests**, which verify the retrievel of authors by name and email, as well as enforcement of uniqueness constraints.
+**AuthorRepository tests**, which verify retrieval of authors by name and email, as well as enforcement of uniqueness constraints.
 **CheepRepository tests**, which validate that cheeps are correctly stored, returned in order, filtered by author, and that new authors are created automatically when a cheep is posted by an unknown author.
 
 #### Razor integration tests
 
-These tests verify that the ASP.NET Core Razor application is correctly wired and responds to HTTP request correctly. They use WebApplicationFactory to start the applicated in a controlled environment for testing.
+These tests verify that the ASP.NET Core Razor application is correctly wired and responds to HTTP requests correctly. They use WebApplicationFactory to start the application in a controlled environment for testing.
 
 These tests ensure that dependency injections, middleware configurations, and database setups work correctly at startup.
 
 #### UI Tests
 
-The UI tests use Playwright to validate user behavior through a real browser environment. They simulate a series of realistic user interactions and thus verifies visible outcomes in the rendered HTML.
+The UI tests use Playwright to validate user behavior through a real browser environment. They simulate a series of realistic user interactions and thus verify visible outcomes in the rendered HTML.
 
 The tests cover:
 
@@ -189,7 +191,7 @@ The tests simulate situations such as:
 - Logging in as an existing user
 - Creating a new cheep
 - Verifying that a cheep appears in the timeline
-- Verifying that the cheep is persistent
+- Verifying that the cheep is persisted
 
 These tests provide a strong level of confidence and assurance by confirming that multiple layers work together correctly.
 
