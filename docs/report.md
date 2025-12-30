@@ -104,6 +104,19 @@ Overall, the deployment architecture follows a client–server model in which th
 ## User activities
 
 ## Sequence of functionality/calls trough _Chirp!_
+Figure X illustrates the runtime flow of an unauthenticated request through the Chirp! application using a UML sequence diagram. The diagram shows starts with an HTTP request from a web browser and ending with a fully rendered HTML page returned to the client.
+
+The interaction begins when a web browser sends an HTTP GET request to the root endpoint of the application. The request is received by the ASP.NET Core runtime, which is responsible for routing incoming requests to the appropriate Razor Page based on the configured routing rules. In this case, the request is routed to the Public Razor Page.
+
+The Public Razor Page coordinates the retrieval of data required to render the page. To obtain the list of cheeps for the public timeline, it invokes the CheepService through its application-layer interface. The service call represents an application-level operation that encapsulates the business logic required to fetch cheeps independently of persistence concerns.
+
+The CheepService delegates data access to the CheepRepository, which is responsible for interacting with the persistence layer. The repository uses Entity Framework Core, represented by the ChirpDbContext, to query the underlying SQLite database. The database returns a collection of cheep entities, which are mapped to data transfer objects (DTOs) and send back through the repository and service layers to the Razor Page.
+
+Once the data has been retrieved, the Public Razor Page returns a Page() result to the ASP.NET Core runtime. The runtime then renders the associated Razor view using the populated page model, producing a complete HTML document. Finally, the rendered HTML is sent back to the web browser as an HTTP 200 OK response.
+
+Although several operations in the diagram are implemented using asynchronous methods in C#, they are modeled as synchronous calls in the sequence diagram, as the calling components await their completion before continuing execution. 
+
+![Sequence diagram of aned user.](images/Chirp-Sequence-Diagram.png)
 
 # Process
 
