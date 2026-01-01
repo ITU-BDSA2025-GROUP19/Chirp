@@ -217,7 +217,7 @@ These tests provide a strong level of confidence and assurance by confirming tha
 # Ethics
 
 ## License
-
+We decided to use the MIT License for this project because it allows the code to be shared freely. Most importantly, the MIT License works well with common open-source libraries. It is also easy for computer science students to understand. The license does not require others to share their changes to this project. Finally, the MIT License includes a liability disclaimer, which protects us in case the software is misused or contains errors.
 ## LLMs, ChatGPT, CoPilot, and others
 LLMs have been used throughout the development of this project for a variety of tasks. The extent to which LLMs were used varied among team members, reflecting different working styles and preferences. Below is an overview of how LLMs contributed to the project.
 
