@@ -1,118 +1,200 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.Playwright;
+using Microsoft.Data.Sqlite;
+using Xunit;
 
-namespace Chirp.EndToEnd.Test;
-
-public class End2End : IDisposable
+namespace Chirp.End2End.Tests
 {
-    private Process? _apiProcess;
-
-    public End2End()
+    public class End2End : IAsyncLifetime
     {
-        StartApi();
-        Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
-        Environment.SetEnvironmentVariable("CHIRP_SERVICE_URL", "http://localhost:5165");
-    }
-    
-    [Fact]
-    public void TestReadCheep()
-    {
-        // Arrange
-        ArrangeTestDatabase();
-        string output = RunCli("read");
+        private IPlaywright? _playwright;
+        private IBrowser? _browser;
+        private IBrowserContext? _context;
+        private IPage? _page;
 
-        // Act
-        string fstCheep = output.Split("\n")[0].TrimEnd('\r', '\n');
+        private const string BaseUrl = "http://localhost:5273";
 
-        // Assert
-        Assert.StartsWith("ropf", fstCheep);
-        Assert.EndsWith("Hello, BDSA students!", fstCheep);
-    }
-
-    [Fact]
-    public void TestStoreCheep()
-    {
-        // Arrange
-        ArrangeTestDatabase();
-        string testMessage = "This is a test cheep!";
-
-        // Act – store new cheep
-        RunCli($"cheep \"{testMessage}\"");
-
-        // Assert – read back and check the last line
-        string output = RunCli("read");
-        string lastCheep = output.Split("\n")
-                                 .Last(line => !string.IsNullOrWhiteSpace(line))
-                                 .TrimEnd('\r', '\n');
-
-        Assert.Contains(testMessage, lastCheep);
-        Assert.StartsWith(Environment.UserName, lastCheep);
-    }
-    
-    private void StartApi()
-    {
-        var apiDll = Path.GetFullPath(
-            Path.Combine("..", "..", "..", "..", "..", "src", "Chirp.CSVDBService",
-                "bin", "Debug", "net8.0", "Chirp.CSVDBService.dll"));
-
-        _apiProcess = new Process
+        public async Task InitializeAsync()
         {
-            StartInfo = new ProcessStartInfo
+            _playwright = await Playwright.CreateAsync();
+            _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true });
+            _context = await _browser.NewContextAsync(new BrowserNewContextOptions { IgnoreHTTPSErrors = true });
+            _page = await _context.NewPageAsync();
+        }
+
+        public async Task DisposeAsync()
+        {
+            try
             {
-                FileName = "dotnet",
-                Arguments = $"\"{apiDll}\" --urls http://localhost:5165",
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                CreateNoWindow = true
+                if (_page != null) await _page.CloseAsync();
+                if (_context != null) await _context.CloseAsync();
+                if (_browser != null) await _browser.CloseAsync();
             }
-        };
+            finally
+            {
+                _playwright?.Dispose();
+            }
+        }
 
-        _apiProcess.Start();
-
-        // Give API a bit of time to boot
-        Thread.Sleep(3000);
-    }
-
-    private static string RunCli(string arguments)
-    {
-        var cliDll = Path.GetFullPath(
-            Path.Combine("..", "..", "..", "..", "..", "src", "Chirp.CLI.Client",
-                         "bin", "Debug", "net8.0", "Chirp.CLI.Client.dll")
-        );
-
-        using var process = new Process();
-        process.StartInfo.FileName = "dotnet";
-        process.StartInfo.Arguments = $"\"{cliDll}\" {arguments}";
-        process.StartInfo.UseShellExecute = false;
-        process.StartInfo.RedirectStandardOutput = true;
-        process.Start();
-
-        string output = process.StandardOutput.ReadToEnd();
-        process.WaitForExit();
-        return output;
-    }
-    
-    private void ArrangeTestDatabase()
-    {
-        var exeDir = Path.GetFullPath(
-            Path.Combine("..", "..", "..", "..", "..", "src", "Chirp.CSVDBService",
-                         "bin", "Debug", "net8.0")
-        );
-        var dbPath = Path.Combine(exeDir, "chirp_cli_db.csv");
-
-        var templatePath = Path.GetFullPath(
-            Path.Combine("..", "..", "..", "..", "..", "data", "chirp_cli_db_test.csv")
-        );
-
-        File.Copy(templatePath, dbPath, overwrite: true);
-    }
-    
-    public void Dispose()
-    {
-        if (_apiProcess != null && !_apiProcess.HasExited)
+        // Test: input is no more than 160 Characters
+        [Fact]
+        public async Task Cheep_Input_Is_Truncated_At_160_Characters()
         {
-            _apiProcess.Kill(entireProcessTree: true);
-            _apiProcess.Dispose();
+            if (_page == null) throw new InvalidOperationException("Page not ready");
+
+            await LoginAsAsync("anna@itu.dk", "Password123");
+
+            var input = _page.Locator("#CheepText");
+            await input.WaitForAsync();
+
+            var longMessage = new string('a', 170);
+            await input.FillAsync(longMessage);
+
+            var val = await input.InputValueAsync();
+            Assert.Equal(160, val.Length);
+        }
+
+        // Test: cheep is in UI then   DB
+        [Fact]
+        public async Task Cheep_Is_Persisted_And_Displayed_For_Author()
+        {
+            if (_page == null) throw new InvalidOperationException("Page not ready");
+
+            var email = "anna@itu.dk";
+            var password = "Password123";
+            var expectedAuthor = "Anna";
+            var uniqueCheep = $"E2E test {Guid.NewGuid()}";
+            string? dbPath = null;
+
+            try
+            {
+                await LoginAsAsync(email, password);
+
+                var cheepBox = _page.Locator(".cheepbox");
+                await cheepBox.WaitForAsync();
+
+                await _page.FillAsync("#CheepText", uniqueCheep);
+                await ClickSubmitButtonAsync();
+                await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+                // Checking UI
+                var listItem = _page.Locator("li")
+                    .Filter(new() { HasText = uniqueCheep })
+                    .Filter(new() { HasText = expectedAuthor });
+
+                await listItem.WaitForAsync(new LocatorWaitForOptions { Timeout = 30000 });
+                Assert.True(await listItem.IsVisibleAsync());
+
+                // Checking DB
+                dbPath = ResolveDatabasePath();
+                Assert.True(File.Exists(dbPath));
+
+                var exists = await PollForCheepInDb(dbPath, uniqueCheep, expectedAuthor);
+                Assert.True(exists);
+            }
+            finally
+            {
+                if (!string.IsNullOrEmpty(dbPath) && File.Exists(dbPath))
+                {
+                    await CleanupCheepInDb(dbPath, uniqueCheep);
+                }
+            
+            //uNTIL HERE 
+            }
+        }
+
+        private async Task LoginAsAsync(string email, string password)
+        {
+            if (_page == null) return;
+            await _page.GotoAsync($"{BaseUrl}/Identity/Account/Login");
+            await _page.GetByLabel("Email").FillAsync(email);
+            await _page.GetByLabel("Password").FillAsync(password);
+            await _page.GetByRole(AriaRole.Button, new() { Name = "Log in", Exact = true }).ClickAsync();
+            await _page.WaitForURLAsync(url => !url.Contains("/Login"), new PageWaitForURLOptions { Timeout = 10000 });
+        }
+
+        private async Task ClickSubmitButtonAsync()
+        {
+            if (_page == null) return;
+
+            var shareBtn = _page.GetByRole(AriaRole.Button, new() { Name = "Share" });
+            if (await shareBtn.IsVisibleAsync())
+            {
+                await shareBtn.ClickAsync();
+                return;
+            }
+
+            var inputBtn = _page.Locator("input[type='submit']");
+            if (await inputBtn.IsVisibleAsync())
+            {
+                await inputBtn.ClickAsync();
+                return;
+            }
+
+            var genericBtn = _page.Locator(".cheepbox button");
+            if (await genericBtn.CountAsync() > 0)
+            {
+                await genericBtn.First.ClickAsync();
+                return;
+            }
+
+            throw new Exception("No submit button found");
+        }
+
+        private static string ResolveDatabasePath()
+        {
+            var env = Environment.GetEnvironmentVariable("TEST_DB_PATH");
+            if (!string.IsNullOrEmpty(env) && File.Exists(env)) return Path.GetFullPath(env);
+
+            var root = new DirectoryInfo(Directory.GetCurrentDirectory());
+            while (root != null && root.GetFiles("*.sln").Length == 0) root = root.Parent;
+
+            if (root != null)
+            {
+                var razorDb = Path.Combine(root.FullName, "src", "Chirp.Razor", "Chirp.db");
+                if (File.Exists(razorDb)) return razorDb;
+
+                var webDb = Path.Combine(root.FullName, "src", "Chirp.Web", "Chirp.db");
+                if (File.Exists(webDb)) return webDb;
+            }
+            return "Chirp.db";
+        }
+
+        private async Task<bool> PollForCheepInDb(string dbPath, string cheepText, string authorName)
+        {
+            var connString = $"Data Source={dbPath}";
+            var timeout = TimeSpan.FromSeconds(5);
+            var start = DateTime.Now;
+
+            while (DateTime.Now - start < timeout)
+            {
+                using var conn = new SqliteConnection(connString);
+                await conn.OpenAsync();
+
+                var cmd = conn.CreateCommand();
+                cmd.CommandText = @"
+                    SELECT COUNT(1)
+                    FROM Cheeps c
+                    JOIN Authors a ON c.AuthorId = a.AuthorId
+                    WHERE c.Text = @text AND a.Name = @name";
+                cmd.Parameters.AddWithValue("@text", cheepText);
+                cmd.Parameters.AddWithValue("@name", authorName);
+
+                var count = (long)(await cmd.ExecuteScalarAsync() ?? 0L);
+                if (count > 0) return true;
+
+                await Task.Delay(100);
+            }
+            return false;
+        }
+
+        private async Task CleanupCheepInDb(string dbPath, string cheepText)
+        {
+            using var conn = new SqliteConnection($"Data Source={dbPath}");
+            await conn.OpenAsync();
+            var cmd = conn.CreateCommand();
+            cmd.CommandText = "DELETE FROM Cheeps WHERE Text = @text";
+            cmd.Parameters.AddWithValue("@text", cheepText);
+            await cmd.ExecuteNonQueryAsync();
         }
     }
 }
