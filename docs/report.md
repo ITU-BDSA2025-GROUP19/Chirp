@@ -102,7 +102,23 @@ Overall, the deployment architecture follows a client–server model in which th
 
 
 ## User activities
+Chirp! supports different user activities depending on whether a user is logged in or not.
 
+Unlogged users
+
+Users who are not logged in can freely browse the public timeline and read all publicly available chirps. For each chirp, users may use the AI-assisted fact-checking feature. If a chirp contains a factual claim, the system evaluates whether the statement is likely to be true. If the content is opinion-based, the system instead reports that the chirp represents an opinion rather than a fact.
+
+The unlogged user can register via email or use the GitHub OAuth Authentication to register/log in.
+
+Loged in  users
+
+When logged in, users gain access to additional functionality while retaining all capabilities available to unlogged users. Logged in users can create and publish new chirps, follow and unfollow other authors, and interact with the application as a registered author.
+
+Regisetred  users also have access to a personalized timeline (“My Timeline”), which displays chirps authored by users they follow, as well as their own chirps. This allows users to show a feed tailored to them.
+
+Through the “About Me” page, users can view personal account information, see which authors they follow, and browse their own published chirps.
+
+Finally, authenticated users can choose to log out from the main page. They may also activate the “Forget Me” functionality, which permanently deletes all personal user data from the database. As part of this process, the user’s chirps are anonymized to preserve content while removing identifiable information.
 ## Sequence of functionality/calls trough _Chirp!_
 Figure  illustrates the runtime flow of an unauthenticated request through the Chirp! application using a UML sequence diagram. The diagram shows starts with an HTTP request from a web browser and ending with a fully rendered HTML page returned to the client.
 
