@@ -4,7 +4,8 @@ subtitle: ITU BDSA 2025 Group 19
 author:
 - "Hans Voldby Larsen <havl@itu.dk>"
 - "Nikolaj Severin Due Olsen <nsol@itu.dk>"
-
+- "Kasper Fjord Grønvold Jensen <kfje@itu.dk>"
+- "Alex Matlok <almat@itu.dk>"
 numbersections: true
 ---
 
@@ -120,7 +121,7 @@ Through the “About Me” page, users can view personal account information, se
 
 Finally, authenticated users can choose to log out from the main page. They may also activate the “Forget Me” functionality, which permanently deletes all personal user data from the database. As part of this process, the user’s chirps are anonymized to preserve content while removing identifiable information.
 ## Sequence of functionality/calls trough _Chirp!_
-Figure  illustrates the runtime flow of an unauthenticated request through the Chirp! application using a UML sequence diagram. The diagram shows starts with an HTTP request from a web browser and ending with a fully rendered HTML page returned to the client.
+Figure 5 illustrates the runtime flow of an unauthenticated request through the Chirp! application using a UML sequence diagram. The diagram shows starts with an HTTP request from a web browser and ending with a fully rendered HTML page returned to the client.
 
 The interaction begins when a web browser sends an HTTP GET request to the root endpoint of the application. The request is received by the ASP.NET Core runtime, which is responsible for routing incoming requests to the appropriate Razor Page based on the configured routing rules. In this case, the request is routed to the Public Razor Page.
 
@@ -132,7 +133,7 @@ Once the data has been retrieved, the Public Razor Page returns a Page() result 
 
 Although several operations in the diagram are implemented using asynchronous methods in C#, they are modeled as synchronous calls in the sequence diagram, as the calling components await their completion before continuing execution. 
 
-![Sequence diagram of aned user.](images/Chirp-Sequence-Diagram.png)
+![Sequence diagram of unauthorized user.](images/Chirp-Sequence-Diagram.png)
 
 # Process
 
@@ -157,6 +158,42 @@ All of this can be seen in the UML activity diagrams below
 ![Illustration of the release workflow as a UML activity diagram.](images/release_workflow.png)
 
 ## Team work
+The team’s collaboration and development process was centered around the use of GitHub issues as the primary unit of work. Planned features, bug fixes, and improvements were represented as GitHub issues. This ensured transparency in task ownership.
+
+The team followed a consistent workflow for progressing from an issue to a completed feature in the main branch:
+
+- Review and complete the previous pull request
+Before starting new work, team members reviewed any open pull requests. Once approved, pull requests were merged using the Squash and merge.
+
+- Assign the next issue
+A team member then assigned themselves to the next available GitHub issue on the project board. This made responsibility for each task explicit and reduced the risk of duplicated work.
+
+- Create a feature branch
+A new branch was created from the main branch, typically named according to the issue or feature being implemented.
+
+- Implementation on the branch
+Development was carried out entirely on the feature branch. The developer implemented the required functionality and verified it locally before publishing changes.
+
+- Push branch to remote
+Once development was complete, the branch was pushed to the remote repository, typically using the Publish Branch functionality in GitHub Desktop.
+
+- Create pull request
+A pull request was created targeting the main branch. The pull request included a short description of the changes and referenced the relevant issue.
+
+- Automatic issue closure
+The pull request description included the text closes #X, where X is the GitHub issue number. This ensured that the issue was automatically closed once the pull request was merged.
+
+- Review coordination via Discord
+After opening a pull request, the developer notified the team via Discord to request a review. This helped ensure timely feedback and reduced idle time.
+
+The development process relied on team members self-assigning to open issues, which introduced certain challenges. Some team members were unable to participate for extended periods due to external circumstances, resulting in phases where active development was carried out by fewer team members than originally planned. In a more realistic project setting, a more deliberate assignment of issues would likely have ensured a more structured process and a more even distribution of the workload.
+
+By the end of the project, only a small number of issues remained open, as the required application features had largely been implemented. Some compiler warnings remain and should ideally be addressed. Additionally, further testing and refactoring of parts of the codebase would be necessary to improve the overall quality and maintainability of the application. These potential improvements were intentionally not added as issues, as they were unlikely to be completed within the project timeframe. Figure 9 shows the state of the project board at the conclusion of the project.
+
+![project board at the conclusion of the project.](images/Project-board.png)
+
+
+
 
 ## How to make _Chirp!_ work locally
 First clone the repository by opening a command prompt and typing _git clone https://github.com/ITU-BDSA2025-GROUP19/Chirp \<foldername\>_. Next, navigate to the folder "Chirp.Razor" < "src" and execute the following _dotnet run_. This will start the application and open a port on your computer. Copy the URL displayed in the terminal _http://localhost:5273_ and paste it into your browser to explore the application.
